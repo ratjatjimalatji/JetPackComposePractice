@@ -384,8 +384,7 @@ class MainActivity : ComponentActivity() {
 
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Red),
+                .fillMaxWidth(),
             contentAlignment = Alignment.Center,
         ) {
             Card(
@@ -396,12 +395,9 @@ class MainActivity : ComponentActivity() {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 10.dp, vertical = 10.dp), // Your 80% width
-                    horizontalAlignment = Alignment.CenterHorizontally,
-
-
+                        .padding(horizontal = 10.dp, vertical = 10.dp),
                     ) {
-                    Row()
+                    Row( modifier = Modifier.align(Alignment.Start).padding(start =10.dp), )
                     {
                         Icon(painterResource(R.drawable.ic_group), contentDescription = null)
                         Spacer(modifier = Modifier.width(5.dp))
