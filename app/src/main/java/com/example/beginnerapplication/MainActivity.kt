@@ -101,7 +101,7 @@ class MainActivity : ComponentActivity() {
                             .padding(top = 50.dp)
                     ) {
                         CardWithContent()
-                        CenteredTitle(title="Enter product details")
+                        CenteredTitle(title = "Enter product details")
                         CustomTextField(
                             modifier = Modifier.textFieldSuccess(true),
                             value = name,
@@ -181,7 +181,8 @@ class MainActivity : ComponentActivity() {
                                     description = ""
                                     price = ""
                                     NewProduct.addProduct(NewProduct)
-                                }}
+                                }
+                            }
 //                            }, modifier = Modifier
 //                                .width(150.dp)
                         ) {
@@ -247,7 +248,7 @@ class MainActivity : ComponentActivity() {
 
                     verticalAlignment = Alignment.CenterVertically,
 
-                ) {
+                    ) {
                     rowItems.forEach { info ->
                         // Find the actual index in the original list to update state correctly
                         val originalIndex = checkboxOptions.indexOf(info)
@@ -261,7 +262,8 @@ class MainActivity : ComponentActivity() {
                                 checked = info.isChecked,
                                 onCheckedChange = { isChecked ->
                                     if (originalIndex != -1) {
-                                        checkboxOptions[originalIndex] = info.copy(isChecked = isChecked)
+                                        checkboxOptions[originalIndex] =
+                                            info.copy(isChecked = isChecked)
                                     }
                                 }
                             )
@@ -292,41 +294,50 @@ class MainActivity : ComponentActivity() {
         val sliderInMillions = sliderPosition / 1000000
         val formattedValue = "%.3f".format(sliderInMillions)
 
-CenteredTitle(title = "Coverage Details")
+        CenteredTitle(title = "Coverage Details")
         Box(
             modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center,
         ) {
-            Card(modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .padding(vertical = 10.dp)){
-
-            Column(
+            Card(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp, vertical = 10.dp), // Your 80% width
-               horizontalAlignment = Alignment.CenterHorizontally,
+                    .fillMaxWidth(0.95f)
+                    .padding(vertical = 10.dp)
             ) {
-                Row()
-                {
-                    Text(text = "How much cover do you need? ", fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text( text = "R$formattedValue m", fontSize = 20.sp, fontWeight =  FontWeight.ExtraBold, color = Color(0xFF823199))
-                }
 
-                Slider(
-                    value = sliderPosition,
-                    onValueChange = { sliderPosition = it },
-                    valueRange = 500000f..10000000f,
-                    steps = 189
-                )
-                Text(
-                    text = "Range: R500K - R10m",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF823199)
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 10.dp), // Your 80% width
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Row()
+                    {
+                        Text(text = "How much cover do you need? ", fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(
+                            text = "R$formattedValue m",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF823199)
+                        )
+                    }
+
+                    Slider(
+                        value = sliderPosition,
+                        onValueChange = { sliderPosition = it },
+                        valueRange = 500000f..10000000f,
+                        steps = 189
+                    )
+                    Text(
+                        text = "Range: R500K - R10m",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF823199)
+                    )
+                }
             }
         }
-    }}
+    }
+
     @Composable
     fun CustomTextField(
         value: String,
@@ -372,70 +383,79 @@ CenteredTitle(title = "Coverage Details")
         var numberOfDependents by remember { mutableIntStateOf(0) }
 
         Box(
-            modifier = Modifier.fillMaxWidth().background(Color.Red), contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Red),
+            contentAlignment = Alignment.Center,
         ) {
-            Card(modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .padding(vertical = 10.dp)) {
-                    Column(
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(0.95f)
+                    .padding(vertical = 10.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 10.dp), // Your 80% width
+                    horizontalAlignment = Alignment.CenterHorizontally,
+
+
+                    ) {
+                    Row()
+                    {
+                        Icon(painterResource(R.drawable.ic_group), contentDescription = null)
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(text = "Number of dependents ", fontWeight = FontWeight.Bold)
+
+                    }
+                }
+
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)), // Light grey instead of Magenta for better UI
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .align(Alignment.CenterHorizontally)
+                        .padding(bottom = 10.dp)//.align(Alignment.CenterHorizontally
+                ) {
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 10.dp, vertical = 10.dp), // Your 80% width
-                        horizontalAlignment = Alignment.CenterHorizontally,
-
-
-                        ) {
-                        Row()
-                        {
-                            Icon(painterResource(R.drawable.ic_group), contentDescription = null)
-                            Spacer(modifier = Modifier.width(5.dp))
-                            Text(text = "Number of dependents ", fontWeight = FontWeight.Bold)
-
-                        }
-                    }
-
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)), // Light grey instead of Magenta for better UI
-                        modifier = Modifier.fillMaxWidth(0.9f).align(Alignment.CenterHorizontally).padding(bottom = 10.dp)//.align(Alignment.CenterHorizontally
+                            .padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween // Pushes text to left, controls to right
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween // Pushes text to left, controls to right
-                        ) {
-                            Text(text = "Spouse & children", modifier = Modifier.weight(1f))
+                        Text(text = "Spouse & children", modifier = Modifier.weight(1f))
 
-                            // Stepper Controls
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                IconButton(onClick = { if (numberOfDependents > 0) numberOfDependents-- }) {
-                                    Icon(
-                                        painterResource(R.drawable.ic_minus),
-                                        contentDescription = "Decrease"
-                                    )
-                                }
-
-                                Text(
-                                    text = numberOfDependents.toString(),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier.padding(horizontal = 8.dp)
+                        // Stepper Controls
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            IconButton(onClick = { if (numberOfDependents > 0) numberOfDependents-- }) {
+                                Icon(
+                                    painterResource(R.drawable.ic_minus),
+                                    contentDescription = "Decrease"
                                 )
+                            }
 
-                                IconButton(onClick = { numberOfDependents++ }) {
-                                    Icon(
-                                        painterResource(R.drawable.ic_add),
-                                        contentDescription = "Increase"
-                                    )
-                                }
+                            Text(
+                                text = numberOfDependents.toString(),
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+
+                            IconButton(onClick = { numberOfDependents++ }) {
+                                Icon(
+                                    painterResource(R.drawable.ic_add),
+                                    contentDescription = "Increase"
+                                )
                             }
                         }
                     }
                 }
+            }
         }
 
-}
-//}
+    }
+
+    //}
     // 2. THE DEDICATED PREVIEW
     @Preview(showBackground = true, name = "Form Example")
     @Composable
