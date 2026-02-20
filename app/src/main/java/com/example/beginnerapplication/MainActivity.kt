@@ -1,18 +1,13 @@
 package com.example.beginnerapplication
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.RequiresApi
-import androidx.annotation.Size
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,13 +23,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -65,8 +60,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -76,10 +69,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.toSize
 import com.example.beginnerapplication.ui.theme.BeginnerApplicationTheme
 import kotlinx.coroutines.launch
-import kotlin.random.Random
+
 
 class MainActivity : ComponentActivity() {
 
@@ -104,8 +96,11 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(top = 50.dp)
                     ) {
+                        IconTextSquare()
                         DependentsScreen()
                         MonthlyIncomeBracket()
+
+
 
                         CenteredTitle(title = "Enter product details")
                         CustomTextField(
@@ -166,7 +161,7 @@ class MainActivity : ComponentActivity() {
 
 
                         Spacer(modifier = Modifier.height(8.dp))
-                        Column() {
+                        Column {
                             Checkboxes()
                         }
                         Button(
@@ -175,18 +170,18 @@ class MainActivity : ComponentActivity() {
                             onClick = {
                                 val priceAsFloat = price.toFloatOrNull() ?: 0f
                                 if (name.isNotBlank() && description.isNotBlank() && price.isNotBlank()) {
-                                    val NewProduct = Product(
+                                    val newProduct = Product(
                                         name = name.trim(),
                                         description = description.trim(),
                                         price = priceAsFloat
                                     )
-                                    listOfProducts = listOfProducts + NewProduct
+                                    listOfProducts = listOfProducts + newProduct
 
 
                                     name = ""
                                     description = ""
                                     price = ""
-                                    NewProduct.addProduct(NewProduct)
+                                    newProduct.addProduct(newProduct)
                                 }
                             }
 //                            }, modifier = Modifier
@@ -393,8 +388,7 @@ class MainActivity : ComponentActivity() {
         Card(
             modifier = modifier
                 .fillMaxWidth(0.95f)
-                .padding(vertical = 10.dp)
-                ,colors = CardDefaults.cardColors(
+                .padding(vertical = 10.dp), colors = CardDefaults.cardColors(
                 containerColor = Color.White // Card background color
             ), elevation = CardDefaults.cardElevation(
                 defaultElevation = 8.dp
@@ -425,6 +419,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
     @Composable
     fun DependentStepper(
         count: Int,
@@ -486,16 +481,12 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun MonthlyIncomeBracket(){
-        var count by remember { mutableIntStateOf(0) }
-        ReusableOuterCard(
+    fun MonthlyIncomeBracket() {
+             ReusableOuterCard(
             "Monthly Income Bracket", R.drawable.ic_currency,
-            //modifier = TODO(),
-            //content = TODO()
-        ){
+        ) {
             DropdownDemo()
-
-    }
+  }
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -536,7 +527,7 @@ class MainActivity : ComponentActivity() {
                     colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .menuAnchor() // Critical: anchors the menu to the text field
+                        .menuAnchor()
                 )
 
                 ExposedDropdownMenu(
@@ -557,6 +548,59 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+
+    @Composable
+    fun IconTextSquare() {
+
+        data class IconText(
+            val iconRes: Int,
+            val text: String
+        )
+
+        val listOfIcons = listOf(
+            IconText(R.drawable.ic_hospital, "Hospital"),
+            IconText(R.drawable.ic_comprehensive, "Comprehensive"),
+            IconText(R.drawable.ic_save, "Saving")
+        )
+Row(){
+            for (item in listOfIcons){
+        // 1. The outer Column handles the positioning of the CARD itself
+        Column(
+            //modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Card(
+                modifier = Modifier.padding(10.dp)
+            ) {
+                // 2. We NEED a Column inside the Card to stack the icon and text vertically
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    // 3. This centers the icon and text horizontally WITHIN the card
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // The Circle
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp) //circle size
+                            .background(color = Color.LightGray, shape = CircleShape),
+                        contentAlignment = Alignment.Center // Centers the Icon inside the Circle
+                    ) {
+                        Icon(
+                            painter = painterResource(item.iconRes),
+                            contentDescription = null,
+                            tint = Color(0xFF823199),
+                        )
+                    }
+
+                    // The Label
+                    Text(text = item.text, fontWeight = FontWeight.Medium, color = Color.Black)
+                }
+            }
+        }
+    }}
     }
     // 2. THE DEDICATED PREVIEW
     @Preview(showBackground = true, name = "Form Example")
@@ -668,49 +712,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun ListOfNames(
-        listOfNames: List<String>,
-        modifier: Modifier = Modifier
-    ) {
-
-        LazyColumn(modifier) {
-//        if(listOfNames.size > 0){
-//            Text(text="List of names in list")
-            items(listOfNames) { currentName ->
-
-                Text(
-                    text = currentName,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-                HorizontalDivider(thickness = 5.dp)
-            }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    @Composable
-    fun Greeting(name: String, modifier: Modifier = Modifier) {
-
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-
-            items(10) { i ->
-                Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                    contentDescription = "background",
-                    modifier = Modifier
-                        .padding(start = 10.dp, bottom = 10.dp)
-                        .size(150.dp)
-                        //fillMaxWidth(.3f)
-                        .background(Color.Red)
-                )
-            }
-        }
-
-    }
-
     open class Product(
         val name: String,
         val description: String,
@@ -727,13 +728,5 @@ class MainActivity : ComponentActivity() {
     }
 
     var fries = Food("sides", "French fries", "Sweet and salty", 35.00F)
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-
-    @Composable
-    fun GreetingPreview() {
-        BeginnerApplicationTheme {
-            Greeting("Android")
-        }
-    }
 }
+
