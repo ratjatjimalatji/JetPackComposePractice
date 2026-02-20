@@ -6,11 +6,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
+import androidx.annotation.Size
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,7 +34,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -59,6 +65,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -68,8 +76,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.toSize
 import com.example.beginnerapplication.ui.theme.BeginnerApplicationTheme
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
 
@@ -95,6 +105,8 @@ class MainActivity : ComponentActivity() {
                             .padding(top = 50.dp)
                     ) {
                         DependentsScreen()
+                        MonthlyIncomeBracket()
+
                         CenteredTitle(title = "Enter product details")
                         CustomTextField(
                             modifier = Modifier.textFieldSuccess(true),
@@ -397,8 +409,12 @@ class MainActivity : ComponentActivity() {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Header
-                Row(modifier = Modifier
-                    .align(Alignment.Start).padding(start = 20.dp),verticalAlignment = Alignment.CenterVertically, ) {
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(start = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     Icon(painterResource(iconRes), contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text = title, fontWeight = FontWeight.Bold)
@@ -461,8 +477,6 @@ class MainActivity : ComponentActivity() {
             title = "Number of dependents",
             iconRes = R.drawable.ic_group
         ) {
-            // Because this is a ColumnScope, the inner card is centered
-            // by the parent's horizontalAlignment = Alignment.CenterHorizontally
             DependentStepper(
                 count = count,
                 onIncrement = { count++ },
@@ -471,6 +485,79 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @Composable
+    fun MonthlyIncomeBracket(){
+        var count by remember { mutableIntStateOf(0) }
+        ReusableOuterCard(
+            "Monthly Income Bracket", R.drawable.ic_currency,
+            //modifier = TODO(),
+            //content = TODO()
+        ){
+            DropdownDemo()
+
+    }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun DropdownDemo() {
+        // 1. Cleaner naming conventions
+        var isExpanded by remember { mutableStateOf(false) }
+        val monthlyIncomes = remember {
+            listOf(
+                "R0 - R5,000",
+                "R5,001 - R10,000",
+                "R10,001 - R20,000",
+                "R20,001 - R40,000",
+                "R40,001 - R60,000",
+                "R60,001 - R80,000",
+                "R80,001 - R100,000",
+                "Over R100,000"
+            )
+        }
+        var selectedMonthlyIncome by remember { mutableStateOf(monthlyIncomes[2]) } // Default to first item or empty
+
+        Column(Modifier.fillMaxWidth(0.9f)) {
+            // 2. Use the specialized Dropdown Container
+            ExposedDropdownMenuBox(
+                expanded = isExpanded,
+                onExpandedChange = { isExpanded = it }
+            ) {
+                //
+                OutlinedTextField(
+                    readOnly = true,
+                    value = selectedMonthlyIncome,
+                    onValueChange = {},
+                    label = { Text("Select Monthly Income") },
+                    // 4. Use the built-in trailing icon that animates automatically
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
+                    },
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor() // Critical: anchors the menu to the text field
+                )
+
+                ExposedDropdownMenu(
+                    expanded = isExpanded,
+                    onDismissRequest = { isExpanded = false }
+                ) {
+                    monthlyIncomes.forEach { monthlyIncome ->
+                        DropdownMenuItem(
+                            text = { Text(monthlyIncome) },
+                            onClick = {
+                                selectedMonthlyIncome = monthlyIncome
+                                isExpanded = false
+                            },
+                            // 5. Highlighting the selection (Best Practice)
+                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                        )
+                    }
+                }
+            }
+        }
+    }
     // 2. THE DEDICATED PREVIEW
     @Preview(showBackground = true, name = "Form Example")
     @Composable
