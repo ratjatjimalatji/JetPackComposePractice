@@ -2,7 +2,6 @@ package com.example.beginnerapplication
 
 import android.os.Build
 import android.os.Bundle
-import android.text.Layout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,10 +11,10 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,10 +26,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -42,9 +39,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -65,7 +60,6 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -100,7 +94,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(top = 50.dp)
                     ) {
-                        CardWithContent()
+                        DependentsScreen()
                         CenteredTitle(title = "Enter product details")
                         CustomTextField(
                             modifier = Modifier.textFieldSuccess(true),
@@ -284,7 +278,7 @@ class MainActivity : ComponentActivity() {
         SliderAdvancedExample()
 
 
-    }// 1. THE REUSABLE COMPONENT
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Preview(showBackground = true)
@@ -377,81 +371,106 @@ class MainActivity : ComponentActivity() {
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
-    @Preview(showBackground = true)
     @Composable
-    fun CardWithContent() {
-        var numberOfDependents by remember { mutableIntStateOf(0) }
+    fun ReusableOuterCard(
+        title: String,
+        iconRes: Int,
+        modifier: Modifier = Modifier,
+        content: @Composable ColumnScope.() -> Unit // Allows children to use Column features
+    ) {
+        Card(
+            modifier = modifier
+                .fillMaxWidth(0.95f)
+                .padding(vertical = 10.dp)
+                ,colors = CardDefaults.cardColors(
+                containerColor = Color.White // Card background color
+            ), elevation = CardDefaults.cardElevation(
+                defaultElevation = 8.dp
+            )
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center,
         ) {
-            Card(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(0.95f)
-                    .padding(vertical = 10.dp)
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally, // CENTERS ALL CHILDREN
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp, vertical = 10.dp),
-                    ) {
-                    Row( modifier = Modifier.align(Alignment.Start).padding(start =10.dp), )
-                    {
-                        Icon(painterResource(R.drawable.ic_group), contentDescription = null)
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Text(text = "Number of dependents ", fontWeight = FontWeight.Bold)
-
-                    }
+                // Header
+                Row(modifier = Modifier
+                    .align(Alignment.Start).padding(start = 20.dp),verticalAlignment = Alignment.CenterVertically, ) {
+                    Icon(painterResource(iconRes), contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = title, fontWeight = FontWeight.Bold)
                 }
 
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)), // Light grey instead of Magenta for better UI
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .align(Alignment.CenterHorizontally)
-                        .padding(bottom = 10.dp)//.align(Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween // Pushes text to left, controls to right
-                    ) {
-                        Text(text = "Spouse & children", modifier = Modifier.weight(1f))
+                // This is where your inner card (or anything else) will be injected
+                content()
+            }
+        }
+    }
+    @Composable
+    fun DependentStepper(
+        count: Int,
+        onIncrement: () -> Unit,
+        onDecrement: () -> Unit
+    ) {
+        Card(
+            colors = CardDefaults.cardColors(containerColor = Color.LightGray),
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start // Pushes text to left, controls to right
+            ) {
+                Text(text = "Spouse & children", modifier = Modifier.weight(1f))
+                // Increment number of dependents Controls
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onDecrement) {
+                        Icon(
+                            painterResource(R.drawable.ic_minus),
+                            contentDescription = "Decrease"
+                        )
+                    }
 
-                        // Stepper Controls
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            IconButton(onClick = { if (numberOfDependents > 0) numberOfDependents-- }) {
-                                Icon(
-                                    painterResource(R.drawable.ic_minus),
-                                    contentDescription = "Decrease"
-                                )
-                            }
+                    Text(
+                        text = count.toString(),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
 
-                            Text(
-                                text = numberOfDependents.toString(),
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.padding(horizontal = 8.dp)
-                            )
-
-                            IconButton(onClick = { numberOfDependents++ }) {
-                                Icon(
-                                    painterResource(R.drawable.ic_add),
-                                    contentDescription = "Increase"
-                                )
-                            }
-                        }
+                    IconButton(onClick = onIncrement) {
+                        Icon(
+                            painterResource(R.drawable.ic_add),
+                            contentDescription = "Increase"
+                        )
                     }
                 }
             }
         }
-
     }
 
-    //}
+    @Composable
+    fun DependentsScreen() {
+        var count by remember { mutableIntStateOf(0) }
+
+        ReusableOuterCard(
+            title = "Number of dependents",
+            iconRes = R.drawable.ic_group
+        ) {
+            // Because this is a ColumnScope, the inner card is centered
+            // by the parent's horizontalAlignment = Alignment.CenterHorizontally
+            DependentStepper(
+                count = count,
+                onIncrement = { count++ },
+                onDecrement = { if (count > 0) count-- }
+            )
+        }
+    }
+
     // 2. THE DEDICATED PREVIEW
     @Preview(showBackground = true, name = "Form Example")
     @Composable
