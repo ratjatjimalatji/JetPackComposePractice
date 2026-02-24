@@ -1,24 +1,17 @@
-package com.example.beginnerapplication
+package com.example.beginnerapplication.screens.home
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import com.example.beginnerapplication.R
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -68,207 +61,145 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.beginnerapplication.ui.theme.BeginnerApplicationTheme
+import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 
-
-class MainActivity : ComponentActivity() {
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                BeginnerApplicationTheme {
-                    Spacer(modifier = Modifier.height(40.dp))
-                    ActivePlan(count = 1, typeOfPlan = "medical" )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    DependentsScreen()
-                    Spacer(modifier = Modifier.height(10.dp))
-                    MonthlyIncomeBracket()
-                    Spacer(modifier = Modifier.height(10.dp))
-                    IconTextSquare()
-                }
-            }
-        }
-    }
-}
-
-data class IconText(
-    val iconRes: Int,
-    val text: String,
-    val description: String
-)
-
 @Composable
-fun IconTextSquare() {
+fun HomeScreen(navController: NavController){
+    val greenColour = Color(0xFF066623)
+    var name by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf("") }
 
-    var selectedItem by remember { mutableStateOf<IconText?>(null) }
+    var listOfProducts by remember { mutableStateOf(listOf<Product>()) }
 
-    val listOfIcons = listOf(
-        IconText(
-            R.drawable.ic_hospital,
-            "Hospital",
-            "This plan is designed for individuals who are generally healthy and looking to mitigate the high costs of catastrophic events. It focuses strictly on in-patient care, covering costs incurred while you are admitted to a hospital (such as surgeries, ward fees, and theater costs)."
-        ),
-        IconText(
-            R.drawable.ic_comprehensive,
-            "Comprehensive",
-            "Our highest level of risk transfer. This plan offers extensive cover for both major hospital events and day-to-day healthcare. It often includes above-threshold benefits, meaning if your savings run out, the insurer continues to pay for essential services. It also typically provides richer benefits for chronic medication and specialized treatments."
-        ),
-        IconText(
-            R.drawable.ic_save,
-            "Saving",
-            "A middle-ground approach that combines \"peace of mind\" for hospital stays with a dedicated personal savings account. A portion of your monthly premium is set aside to cover day-to-day medical expenses like GP visits, prescribed medicine, and optometry. Once your savings are depleted, you typically pay for out-of-hospital costs yourself"
-        )
-    )
-    ReusableOuterCard(
-        "Insurance Type",
-        R.drawable.ic_android
+    Column(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Max)) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 50.dp)
+        ) {
+            IconTextSquare()
+            DependentsScreen()
+            MonthlyIncomeBracket()
 
-                for (item in listOfIcons) {
-                    // 1. The outer Column handles the positioning of 1 CARD
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                            .padding(5.dp),
 
-                        ) {
-                        val isSelected = selectedItem == item // checks if the card is selected
-                        Card(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clickable { selectedItem = item },
-                            border = if (isSelected) BorderStroke(
-                                2.dp,
-                                Color(0xFF823199)
-                            ) else null,
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (isSelected) Color.White else Color(0xFFF5F5F5)
-                            )
-                        ) {
-                            // 2. Column that stacks the icon and text vertically
-                            Column(
-                                modifier = Modifier
-                                    .padding(10.dp)
-                                    .fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                // The Circle with Icon inside of it
-                                Box(
-                                    modifier = Modifier
-                                        .size(40.dp) //circle size
-                                        .background(color = Color.LightGray, shape = CircleShape),
-                                    contentAlignment = Alignment.Center // Centers the Icon inside the Circle
-                                ) {
-                                    Icon(
-                                        painter = painterResource(item.iconRes),
-                                        contentDescription = null,
-                                        tint = Color(0xFF823199),
-                                    )
-                                }
 
-                                // The label below the circle w/ Icon
-                                Text(
-                                    text = item.text,
-                                    fontWeight = FontWeight.Medium,
-                                    color = Color.Black,
-                                    textAlign = TextAlign.Center,
-                                    // Standardize text height to 2 lines
-                                    minLines = 2,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = MaterialTheme.typography.labelSmall
-                                )
-                            }
-                        }
+            CenteredTitle(title = "Enter product details")
+            CustomTextField(
+                modifier = Modifier.textFieldSuccess(true),
+                value = name,
+                onValueChange = { textName -> name = textName },
+                label = "Item name",
+                placeholder = "6 Samoosa's",
+                leadingIcon = R.drawable.ic_food,
+                isSuccess = true,
+                supportingText = "*required"
+            )
+            Spacer(modifier = Modifier.height(8.dp))
 
+            CustomTextField(
+                modifier = Modifier.textFieldSuccess(true),
+                value = description,
+                onValueChange = { textDesc -> description = textDesc },
+                label = "Description",
+                placeholder = "Describe the product",
+                leadingIcon = R.drawable.ic_description,
+                isSuccess = true,
+                supportingText = "*required",
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            CustomTextField(
+                modifier = Modifier.textFieldSuccess(true),
+                value = price,
+                onValueChange = { textPrc -> price = textPrc },
+                label = "Price",
+                prefix = "R",
+                placeholder = "500",
+                leadingIcon = R.drawable.ic_currency,
+                isSuccess = true,
+                supportingText = "*required",
+                keyboardType = KeyboardType.Decimal,
+                imeAction = ImeAction.Search
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            if (name.isBlank() || description.isBlank() || price.isBlank()) {
+                Icon(
+                    painterResource(R.drawable.ic_thumb_down_24),
+                    contentDescription = "Name valid icon",
+                )
+            } else {
+                Icon(
+                    painterResource(R.drawable.ic_thumb_down_24),
+                    contentDescription = "Name valid icon",
+                    modifier = Modifier.animateIconTintOnce(true),
+                    tint = greenColour
+                )
+            }
+
+
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Column {
+                Checkboxes()
+            }
+            Button(
+                shape = RoundedCornerShape(5.dp),
+
+                onClick = {
+                    val priceAsFloat = price.toFloatOrNull() ?: 0f
+                    if (name.isNotBlank() && description.isNotBlank() && price.isNotBlank()) {
+                        val newProduct = Product(
+                            name = name.trim(),
+                            description = description.trim(),
+                            price = priceAsFloat
+                        )
+                        listOfProducts = listOfProducts + newProduct
+
+
+                        name = ""
+                        description = ""
+                        price = ""
+                        newProduct.addProduct(newProduct)
                     }
                 }
+//                            }, modifier = Modifier
+//                                .width(150.dp)
+            ) {
+                Text(text = "Add product")
             }
-            // Description Area
-            selectedItem?.let { item ->
-                Column(modifier = Modifier.padding(10.dp)) {
-                    Text(
-                        text = item.text.uppercase(),
-                        color = Color(0xFF823199),
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = item.description,
-                        color = Color.Black,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            Box(
+                modifier = Modifier
+                    .animateIconTintOnce(true, 2500)
+                    .background(Color.Green)
+            )
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                items(listOfProducts) { product ->
+                    ProductInfoRow(product)
                 }
             }
         }
     }
+    DependentsScreen()
 }
-
-@Composable
-fun ActivePlan(
-    typeOfPlan: String,
-    count: Int){
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .clickable {  },
-        elevation = CardDefaults.cardElevation(4.dp)
-        ) {
-        Row(modifier = Modifier.background(Color.White),
-            verticalAlignment = Alignment.CenterVertically){
-        Column(
-            modifier = Modifier
-                .padding(10.dp)
-                .size(50.dp)
-                ,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-           // The Circle with Icon inside of it
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = Color(0xFFF5F5F5), shape = RoundedCornerShape(5.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    modifier = Modifier.size(40.dp),
-                    painter = painterResource(R.drawable.ic_shield),
-                    contentDescription = null,
-                    tint = Color(0xFF823199),
-                )
-            }}
-
-            Column() {
-                Column() {Text(text = "$count active $typeOfPlan plan", fontWeight = FontWeight.Bold, fontSize = 18.sp)}
-                Column() { Text(text="Tap to view coverage details")}
-            }
-
-            Column(modifier = Modifier.fillMaxWidth(),horizontalAlignment = Alignment.End, ) {
-                Icon(painterResource(R.drawable.ic_arrow_right), contentDescription = null, modifier = Modifier.size(40.dp))
-            }}
-        }
-    }
-
 
 @Composable
 fun CenteredTitle(title: String) {
@@ -468,7 +399,7 @@ fun ReusableOuterCard(
                     .padding(start = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(painterResource(iconRes), contentDescription = null, tint = Color(0xFF823199))
+                Icon(painterResource(iconRes), contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = title, fontWeight = FontWeight.Bold)
             }
@@ -486,7 +417,7 @@ fun DependentStepper(
     onDecrement: () -> Unit
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+        colors = CardDefaults.cardColors(containerColor = Color.LightGray),
         modifier = Modifier
             .fillMaxWidth(0.9f)
     ) {
@@ -579,7 +510,6 @@ fun DropdownDemo() {
                 value = selectedMonthlyIncome,
                 onValueChange = {},
                 label = { Text("Select Monthly Income") },
-                textStyle = LocalTextStyle.current.copy(color = Color.Black),
                 // 4. Use the built-in trailing icon that animates automatically
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
@@ -610,6 +540,64 @@ fun DropdownDemo() {
     }
 }
 
+
+@Composable
+fun IconTextSquare() {
+
+    data class IconText(
+        val iconRes: Int,
+        val text: String,
+        val description: String
+    )
+
+    val listOfIcons = listOf(
+        IconText(R.drawable.ic_hospital, "Hospital", "This plan is designed for individuals who are generally healthy and looking to mitigate the high costs of catastrophic events. It focuses strictly on in-patient care, covering costs incurred while you are admitted to a hospital (such as surgeries, ward fees, and theater costs)."),
+        IconText(R.drawable.ic_comprehensive, "Comprehensive", "Our highest level of risk transfer. This plan offers extensive cover for both major hospital events and day-to-day healthcare. It often includes above-threshold benefits, meaning if your savings run out, the insurer continues to pay for essential services. It also typically provides richer benefits for chronic medication and specialized treatments."),
+        IconText(R.drawable.ic_save, "Saving", "A middle-ground approach that combines \"peace of mind\" for hospital stays with a dedicated personal savings account. A portion of your monthly premium is set aside to cover day-to-day medical expenses like GP visits, prescribed medicine, and optometry. Once your savings are depleted, you typically pay for out-of-hospital costs yourself")
+    )
+    ReusableOuterCard("AJ's Watching", R.drawable.ic_android) {
+        Row(){
+            for (item in listOfIcons){
+                // 1. The outer Column handles the positioning of the CARD itself
+                Column(
+                    // modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Card(
+                        modifier = Modifier.padding(10.dp)
+                    ) {
+                        // 2. We NEED a Column inside the Card to stack the icon and text vertically
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            // 3. This centers the icon and text horizontally WITHIN the card
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // The Circle
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp) //circle size
+                                    .background(color = Color.LightGray, shape = CircleShape),
+                                contentAlignment = Alignment.Center // Centers the Icon inside the Circle
+                            ) {
+                                Icon(
+                                    painter = painterResource(item.iconRes),
+                                    contentDescription = null,
+                                    tint = Color(0xFF823199),
+                                )
+                            }
+
+                            // The Label
+                            Text(text = item.text, fontWeight = FontWeight.Medium, color = Color.Black)
+
+                        }
+                    }
+                    Text( text = item.description)
+                }
+            }
+        }
+    }
+}
 // 2. THE DEDICATED PREVIEW
 @Preview(showBackground = true, name = "Form Example")
 @Composable
@@ -736,5 +724,3 @@ class Food(category: String, name: String, description: String, price: Float) :
 }
 
 var fries = Food("sides", "French fries", "Sweet and salty", 35.00F)
-
-
