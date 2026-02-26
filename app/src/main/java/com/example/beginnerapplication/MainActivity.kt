@@ -1,5 +1,6 @@
 package com.example.beginnerapplication
 
+import android.R.attr.horizontalDivider
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,12 +29,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -67,8 +73,10 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -91,7 +99,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyApp {
-                MedicalAidContent()
+                //MedicalAidContent()
+                InsurersContent()
             }
         }
     }
@@ -124,6 +133,7 @@ fun MyApp(content: @Composable (PaddingValues) -> Unit) {    BeginnerApplication
 }
 }
 
+
 @Composable
 fun MedicalAidContent() {
     // Wrapped in a LazyColumn  to handle scrolling
@@ -138,6 +148,55 @@ fun MedicalAidContent() {
         item { IconTextSquare() }
     }
 }
+
+@Composable
+fun InsurersContent(insurersList: List<String> = listOf(
+    "Pineapple",
+    "First for Women",
+    "AA",
+    "Outsurance",
+    "Pineapple",
+    "First for Women",
+    "AA",
+    "Outsurance"
+    )){
+    Column(modifier = Modifier.padding(16.dp)) {
+        LazyColumn {
+            items(items = insurersList) {
+                InsurerRow(name = it)
+                Divider(modifier= Modifier.padding(4.dp), thickness = 2.dp, color = Color.Cyan)
+        }
+    }
+
+
+}}
+
+//Card that displays all insurers details
+@Composable
+fun InsurerRow(name: String){
+    Card(modifier = Modifier
+        .padding(4.dp)
+        .fillMaxWidth()
+        .height(130.dp),
+        shape = RoundedCornerShape(corner = CornerSize(16.dp)),
+        elevation = CardDefaults.cardElevation(2.dp),
+        onClick = { /*TODO*/ })
+    {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start){
+            Surface(modifier = Modifier.padding(12.dp)
+                .size(100.dp),
+                shape = RectangleShape)
+            {
+                Icon(imageVector = Icons.Default.AccountBox,
+                    contentDescription = "Insurer Image"
+                )
+            }
+
+
+            Text(text = name)}
+        }
+    }
+
 data class IconText(
     val iconRes: Int,
     val text: String,
