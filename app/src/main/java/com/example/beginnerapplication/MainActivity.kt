@@ -44,8 +44,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -85,25 +90,54 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                BeginnerApplicationTheme {
-                    Spacer(modifier = Modifier.height(40.dp))
-                    ActivePlan(count = 1, typeOfPlan = "medical" )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    DependentsScreen()
-                    Spacer(modifier = Modifier.height(10.dp))
-                    MonthlyIncomeBracket()
-                    Spacer(modifier = Modifier.height(10.dp))
-                    IconTextSquare()
-                }
+            MyApp {
+                MedicalAidContent()
             }
         }
     }
 }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyApp(content: @Composable (PaddingValues) -> Unit) {    BeginnerApplicationTheme {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Medical Aid Screen",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                // Optional: customize colors
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            )
+        }
+    ) { innerPadding ->
+        // Pass the padding to the content so it doesn't overlap with the top bar
+        Box(modifier = Modifier.padding(innerPadding)) {
+            content(innerPadding)
+        }
+    }
+}
+}
 
+@Composable
+fun MedicalAidContent() {
+    // Wrapped in a LazyColumn  to handle scrolling
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        item { ActivePlan(count = 1, typeOfPlan = "medical") }
+        item { DependentsScreen() }
+        item { MonthlyIncomeBracket() }
+        item { IconTextSquare() }
+    }
+}
 data class IconText(
     val iconRes: Int,
     val text: String,
@@ -137,9 +171,11 @@ fun IconTextSquare() {
         R.drawable.ic_android
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Max)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Max)
+            ) {
 
                 for (item in listOfIcons) {
                     // 1. The outer Column handles the positioning of 1 CARD
@@ -226,48 +262,62 @@ fun IconTextSquare() {
 @Composable
 fun ActivePlan(
     typeOfPlan: String,
-    count: Int){
+    count: Int
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth(0.9f)
-            .clickable {  },
+            .clickable { },
         elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(
+            modifier = Modifier.background(Color.White),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-        Row(modifier = Modifier.background(Color.White),
-            verticalAlignment = Alignment.CenterVertically){
-        Column(
-            modifier = Modifier
-                .padding(10.dp)
-                .size(50.dp)
-                ,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-           // The Circle with Icon inside of it
-            Box(
+            Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = Color(0xFFF5F5F5), shape = RoundedCornerShape(5.dp)),
-                contentAlignment = Alignment.Center
+                    .padding(10.dp)
+                    .size(50.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Icon(
-                    modifier = Modifier.size(40.dp),
-                    painter = painterResource(R.drawable.ic_shield),
-                    contentDescription = null,
-                    tint = Color(0xFF823199),
-                )
-            }}
-
-            Column() {
-                Column() {Text(text = "$count active $typeOfPlan plan", fontWeight = FontWeight.Bold, fontSize = 18.sp)}
-                Column() { Text(text="Tap to view coverage details")}
+                // The Circle with Icon inside of it
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = Color(0xFFF5F5F5), shape = RoundedCornerShape(5.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        modifier = Modifier.size(40.dp),
+                        painter = painterResource(R.drawable.ic_shield),
+                        contentDescription = null,
+                        tint = Color(0xFF823199),
+                    )
+                }
             }
 
-            Column(modifier = Modifier.fillMaxWidth(),horizontalAlignment = Alignment.End, ) {
-                Icon(painterResource(R.drawable.ic_arrow_right), contentDescription = null, modifier = Modifier.size(40.dp))
-            }}
+            Column() {
+                Column() {
+                    Text(
+                        text = "$count active $typeOfPlan plan",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                }
+                Column() { Text(text = "Tap to view coverage details") }
+            }
+
+            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
+                Icon(
+                    painterResource(R.drawable.ic_arrow_right),
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp)
+                )
+            }
         }
     }
+}
 
 
 @Composable
