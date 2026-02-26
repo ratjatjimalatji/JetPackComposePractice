@@ -1,17 +1,24 @@
 package com.example.beginnerapplication.screens.home
 
+import android.R.attr.content
+import android.R.id.content
+import android.util.Log
 import com.example.beginnerapplication.R
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,12 +28,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -37,8 +48,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -55,6 +70,7 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
@@ -69,137 +85,309 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController){
-    val greenColour = Color(0xFF066623)
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf("") }
+fun HomeScreen(navController: NavController) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Medical Aid Screen",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            )
+        }
+    ) { innerPadding ->
+        // innerPadding ensures content starts below the TopAppBar
+        Box(modifier = Modifier.padding(innerPadding)) {
 
-    var listOfProducts by remember { mutableStateOf(listOf<Product>()) }
+            //InsurerListContent(navController = navController)
 
-    Column(
-        modifier = Modifier.fillMaxWidth()
+            //MedicalAidSelectionContent()
+
+            LifeInsuranceQuoteContent()
+        }
+    }
+}
+
+
+@Composable
+fun MedicalAidSelectionContent() {
+    // Wrapped in a LazyColumn  to handle scrolling
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 50.dp)
+        item { ActivePlan(count = 1, typeOfPlan = "medical") }
+        item { DependentsScreen() }
+        item { MonthlyIncomeBracket() }
+        item { IconTextSquare() }
+    }
+}
+
+
+@Composable
+fun LifeInsuranceQuoteContent() {
+    // Wrapped in a LazyColumn  to handle scrolling
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        item { ActivePlan(count = 1, typeOfPlan = "medical") }
+        item { SliderAdvancedExample() }
+    }
+}
+
+@Composable
+fun InsurerListContent(
+    navController: NavController,
+    insurersList: List<String> = listOf(
+        "Pineapple", "First for Women", "AA", "Outsurance",
+        "Old Mutual", "Discovery", "Momentum", "Sanlam"
+    )
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp)
         ) {
-            IconTextSquare()
-            DependentsScreen()
-            MonthlyIncomeBracket()
-
-
-
-            CenteredTitle(title = "Enter product details")
-            CustomTextField(
-                modifier = Modifier.textFieldSuccess(true),
-                value = name,
-                onValueChange = { textName -> name = textName },
-                label = "Item name",
-                placeholder = "6 Samoosa's",
-                leadingIcon = R.drawable.ic_food,
-                isSuccess = true,
-                supportingText = "*required"
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            CustomTextField(
-                modifier = Modifier.textFieldSuccess(true),
-                value = description,
-                onValueChange = { textDesc -> description = textDesc },
-                label = "Description",
-                placeholder = "Describe the product",
-                leadingIcon = R.drawable.ic_description,
-                isSuccess = true,
-                supportingText = "*required",
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            CustomTextField(
-                modifier = Modifier.textFieldSuccess(true),
-                value = price,
-                onValueChange = { textPrc -> price = textPrc },
-                label = "Price",
-                prefix = "R",
-                placeholder = "500",
-                leadingIcon = R.drawable.ic_currency,
-                isSuccess = true,
-                supportingText = "*required",
-                keyboardType = KeyboardType.Decimal,
-                imeAction = ImeAction.Search
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            if (name.isBlank() || description.isBlank() || price.isBlank()) {
-                Icon(
-                    painterResource(R.drawable.ic_thumb_down_24),
-                    contentDescription = "Name valid icon",
-                )
-            } else {
-                Icon(
-                    painterResource(R.drawable.ic_thumb_down_24),
-                    contentDescription = "Name valid icon",
-                    modifier = Modifier.animateIconTintOnce(true),
-                    tint = greenColour
+            items(items = insurersList) { insurerName ->
+                InsurerRow(name = insurerName) { selectedName ->
+                    // NAVIGATION LOGIC:
+                    // Assuming you have a route named "details/{name}"
+                    // navController.navigate("details/$selectedName")
+                    Log.d("Navigation", "Navigating to details for: $selectedName")
+                }
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    thickness = 1.dp,
+                    color = Color.LightGray
                 )
             }
+        }
+    }
+}
 
-
-
-            Spacer(modifier = Modifier.height(8.dp))
-            Column {
-                Checkboxes()
+//Card that displays all insurers details
+@Composable
+fun InsurerRow(name: String, onItemClick: (String) -> Unit = {}) {
+    Card(
+        modifier = Modifier
+            .padding(4.dp)
+            .fillMaxWidth()
+            .height(130.dp)
+            .clickable {},
+        shape = RoundedCornerShape(corner = CornerSize(16.dp)),
+        elevation = CardDefaults.cardElevation(2.dp),
+        onClick = { onItemClick(name) })
+    {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Surface(
+                modifier = Modifier
+                    .padding(12.dp)
+                    .size(100.dp),
+                shape = RectangleShape
+            )
+            {
+                Icon(
+                    imageVector = Icons.Default.AccountBox,
+                    contentDescription = "Insurer Image"
+                )
             }
-            Button(
-                shape = RoundedCornerShape(5.dp),
+            Text(text = name)
+        }
+    }
+}
 
-                onClick = {
-                    val priceAsFloat = price.toFloatOrNull() ?: 0f
-                    if (name.isNotBlank() && description.isNotBlank() && price.isNotBlank()) {
-                        val newProduct = Product(
-                            name = name.trim(),
-                            description = description.trim(),
-                            price = priceAsFloat
-                        )
-                        listOfProducts = listOfProducts + newProduct
+data class IconText(
+    val iconRes: Int,
+    val text: String,
+    val description: String
+)
 
+@Composable
+fun IconTextSquare() {
 
-                        name = ""
-                        description = ""
-                        price = ""
-                        newProduct.addProduct(newProduct)
+    var selectedItem by remember { mutableStateOf<IconText?>(null) }
+
+    val listOfIcons = listOf(
+        IconText(
+            R.drawable.ic_hospital,
+            "Hospital",
+            "This plan is designed for individuals who are generally healthy and looking to mitigate the high costs of catastrophic events. It focuses strictly on in-patient care, covering costs incurred while you are admitted to a hospital (such as surgeries, ward fees, and theater costs)."
+        ),
+        IconText(
+            R.drawable.ic_comprehensive,
+            "Comprehensive",
+            "Our highest level of risk transfer. This plan offers extensive cover for both major hospital events and day-to-day healthcare. It often includes above-threshold benefits, meaning if your savings run out, the insurer continues to pay for essential services. It also typically provides richer benefits for chronic medication and specialized treatments."
+        ),
+        IconText(
+            R.drawable.ic_save,
+            "Saving",
+            "A middle-ground approach that combines \"peace of mind\" for hospital stays with a dedicated personal savings account. A portion of your monthly premium is set aside to cover day-to-day medical expenses like GP visits, prescribed medicine, and optometry. Once your savings are depleted, you typically pay for out-of-hospital costs yourself"
+        )
+    )
+    ReusableOuterCard(
+        "Insurance Type",
+        R.drawable.ic_android
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Max)
+            ) {
+
+                for (item in listOfIcons) {
+                    // 1. The outer Column handles the positioning of 1 CARD
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .padding(5.dp)
+                    ) {
+                        val isSelected = selectedItem == item // checks if the card is selected
+                        Card(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clickable { selectedItem = item },
+                            border = if (isSelected) BorderStroke(
+                                2.dp,
+                                Color(0xFF823199)
+                            ) else null,
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (isSelected) Color.White else Color(0xFFF5F5F5)
+                            )
+                        ) {
+                            // 2. Column that stacks the icon and text vertically
+                            Column(
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                // The Circle with Icon inside of it
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp) //circle size
+                                        .background(color = Color.LightGray, shape = CircleShape),
+                                    contentAlignment = Alignment.Center // Centers the Icon inside the Circle
+                                ) {
+                                    Icon(
+                                        painter = painterResource(item.iconRes),
+                                        contentDescription = null,
+                                        tint = Color(0xFF823199),
+                                    )
+                                }
+                                // The label below the circle w/ Icon
+                                Text(
+                                    text = item.text,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.Black,
+                                    textAlign = TextAlign.Center,
+                                    minLines = 2,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            }
+                        }
                     }
                 }
-//                            }, modifier = Modifier
-//                                .width(150.dp)
-            ) {
-                Text(text = "Add product")
             }
-
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
-
-            Box(
-                modifier = Modifier
-                    .animateIconTintOnce(true, 2500)
-                    .background(Color.Green)
-            )
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(16.dp)
-            ) {
-                items(listOfProducts) { product ->
-                    ProductInfoRow(product)
+            // Description Area
+            selectedItem?.let { item ->
+                Column(modifier = Modifier.padding(10.dp)) {
+                    Text(
+                        text = item.text.uppercase(),
+                        color = Color(0xFF823199),
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = item.description,
+                        color = Color.Black,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }
     }
-    DependentsScreen()
 }
+
+@Composable
+fun ActivePlan(
+    typeOfPlan: String,
+    count: Int
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(0.9f)
+            .clickable { },
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(
+            modifier = Modifier.background(Color.White),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(10.dp)
+                    .size(50.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                // The Circle with Icon inside of it
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = Color(0xFFF5F5F5), shape = RoundedCornerShape(5.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        modifier = Modifier.size(40.dp),
+                        painter = painterResource(R.drawable.ic_shield),
+                        contentDescription = null,
+                        tint = Color(0xFF823199),
+                    )
+                }
+            }
+
+            Column() {
+                Column() {
+                    Text(
+                        text = "$count active $typeOfPlan plan",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                }
+                Column() { Text(text = "Tap to view coverage details") }
+            }
+
+            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
+                Icon(
+                    painterResource(R.drawable.ic_arrow_right),
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp)
+                )
+            }
+        }
+    }
+}
+
 
 @Composable
 fun CenteredTitle(title: String) {
@@ -283,47 +471,44 @@ private fun Checkboxes() {
 fun SliderAdvancedExample() {
     var sliderPosition by remember { mutableFloatStateOf(500000f) }
     val sliderInMillions = sliderPosition / 1000000
-    val formattedValue = "%.3f".format(sliderInMillions)
+    val formattedValue = "%.2f".format(sliderInMillions)
 
     CenteredTitle(title = "Coverage Details")
-    Box(
-        modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center,
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .padding(vertical = 10.dp)
+    ReusableOuterCard("Coverage Details", R.drawable.ic_android) {
+        Box(
+            modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center,
         ) {
+            Card() {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Row()
+                    {
+                        Text(text = "How much cover do you need? ", fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(
+                            text = "R$formattedValue m",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF823199)
+                        )
+                    }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp, vertical = 10.dp), // Your 80% width
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Row()
-                {
-                    Text(text = "How much cover do you need? ", fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.width(5.dp))
+                    Slider(
+                        value = sliderPosition,
+                        onValueChange = { sliderPosition = it },
+                        valueRange = 500000f..10000000f,
+                        steps = 189
+                    )
                     Text(
-                        text = "R$formattedValue m",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.ExtraBold,
+                        text = "Range: R500K - R10m",
+                        style = MaterialTheme.typography.bodySmall,
                         color = Color(0xFF823199)
                     )
                 }
-
-                Slider(
-                    value = sliderPosition,
-                    onValueChange = { sliderPosition = it },
-                    valueRange = 500000f..10000000f,
-                    steps = 189
-                )
-                Text(
-                    text = "Range: R500K - R10m",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF823199)
-                )
             }
         }
     }
@@ -383,7 +568,6 @@ fun ReusableOuterCard(
         ), elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp
         )
-
     ) {
         Column(
             modifier = Modifier
@@ -399,11 +583,10 @@ fun ReusableOuterCard(
                     .padding(start = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(painterResource(iconRes), contentDescription = null)
+                Icon(painterResource(iconRes), contentDescription = null, tint = Color(0xFF823199))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = title, fontWeight = FontWeight.Bold)
             }
-
             // This is where your inner card (or anything else) will be injected
             content()
         }
@@ -417,16 +600,18 @@ fun DependentStepper(
     onDecrement: () -> Unit
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.LightGray),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
         modifier = Modifier
             .fillMaxWidth(0.9f)
     ) {
+
         Row(
             modifier = Modifier
                 .padding(10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start // Pushes text to left, controls to right
         ) {
+
             Text(text = "Spouse & children", modifier = Modifier.weight(1f))
             // Increment number of dependents Controls
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -457,7 +642,6 @@ fun DependentStepper(
 @Composable
 fun DependentsScreen() {
     var count by remember { mutableIntStateOf(0) }
-
     ReusableOuterCard(
         title = "Number of dependents",
         iconRes = R.drawable.ic_group
@@ -510,6 +694,7 @@ fun DropdownDemo() {
                 value = selectedMonthlyIncome,
                 onValueChange = {},
                 label = { Text("Select Monthly Income") },
+                textStyle = LocalTextStyle.current.copy(color = Color.Black),
                 // 4. Use the built-in trailing icon that animates automatically
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
@@ -540,64 +725,6 @@ fun DropdownDemo() {
     }
 }
 
-
-@Composable
-fun IconTextSquare() {
-
-    data class IconText(
-        val iconRes: Int,
-        val text: String,
-        val description: String
-    )
-
-    val listOfIcons = listOf(
-        IconText(R.drawable.ic_hospital, "Hospital", "This plan is designed for individuals who are generally healthy and looking to mitigate the high costs of catastrophic events. It focuses strictly on in-patient care, covering costs incurred while you are admitted to a hospital (such as surgeries, ward fees, and theater costs)."),
-        IconText(R.drawable.ic_comprehensive, "Comprehensive", "Our highest level of risk transfer. This plan offers extensive cover for both major hospital events and day-to-day healthcare. It often includes above-threshold benefits, meaning if your savings run out, the insurer continues to pay for essential services. It also typically provides richer benefits for chronic medication and specialized treatments."),
-        IconText(R.drawable.ic_save, "Saving", "A middle-ground approach that combines \"peace of mind\" for hospital stays with a dedicated personal savings account. A portion of your monthly premium is set aside to cover day-to-day medical expenses like GP visits, prescribed medicine, and optometry. Once your savings are depleted, you typically pay for out-of-hospital costs yourself")
-    )
-    ReusableOuterCard("AJ's Watching", R.drawable.ic_android) {
-        Row(){
-            for (item in listOfIcons){
-                // 1. The outer Column handles the positioning of the CARD itself
-                Column(
-                    // modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Card(
-                        modifier = Modifier.padding(10.dp)
-                    ) {
-                        // 2. We NEED a Column inside the Card to stack the icon and text vertically
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            // 3. This centers the icon and text horizontally WITHIN the card
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            // The Circle
-                            Box(
-                                modifier = Modifier
-                                    .size(40.dp) //circle size
-                                    .background(color = Color.LightGray, shape = CircleShape),
-                                contentAlignment = Alignment.Center // Centers the Icon inside the Circle
-                            ) {
-                                Icon(
-                                    painter = painterResource(item.iconRes),
-                                    contentDescription = null,
-                                    tint = Color(0xFF823199),
-                                )
-                            }
-
-                            // The Label
-                            Text(text = item.text, fontWeight = FontWeight.Medium, color = Color.Black)
-
-                        }
-                    }
-                    Text( text = item.description)
-                }
-            }
-        }
-    }
-}
 // 2. THE DEDICATED PREVIEW
 @Preview(showBackground = true, name = "Form Example")
 @Composable
@@ -724,3 +851,5 @@ class Food(category: String, name: String, description: String, price: Float) :
 }
 
 var fries = Food("sides", "French fries", "Sweet and salty", 35.00F)
+
+

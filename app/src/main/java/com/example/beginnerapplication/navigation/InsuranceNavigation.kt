@@ -10,12 +10,14 @@ import com.example.beginnerapplication.screens.home.HomeScreen
 fun InsuranceNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = InsuranceScreens.HomeScreen){
-        composable(InsuranceScreens.HomeScreen.name){
-
+    NavHost(navController = navController, startDestination = "home") {
+        composable("home") {
             HomeScreen(navController = navController)
         }
+        composable("details/{insurerName}") { backStackEntry ->
+            val name = backStackEntry.arguments?.getString("insurerName")
+            // DetailScreen(name)
+        }
     }
-
 
 }

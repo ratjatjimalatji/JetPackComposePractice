@@ -1,7 +1,6 @@
 package com.example.beginnerapplication.ui.theme
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.R
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -47,24 +46,4 @@ fun IconText(
             style = MaterialTheme.typography.bodyMedium
         )
     }
-}
-
-@Composable
-fun RowOfIcons(
-    //modifier: Modifier = Modifier, listOfIconText: List<IconText>
-
-){
-    HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(top=8.dp))
-    //List of options
-
-
-    HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(bottom=8.dp))
-}
-
-@Composable
-fun IconSelectionOptions(modifier: Modifier = Modifier.fillMaxSize(),
-                         ){
-//    Row(){
-//        Column(modifier = Modifier.weight(1f))
-//    }
 }
