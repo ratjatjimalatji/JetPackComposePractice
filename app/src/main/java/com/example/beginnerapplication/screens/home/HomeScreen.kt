@@ -1,8 +1,6 @@
 package com.example.beginnerapplication.screens.home
 
-import android.R.attr.content
-import android.R.id.content
-import android.util.Log
+import Insurer
 import com.example.beginnerapplication.R
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.Animatable
@@ -28,16 +26,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -50,7 +43,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -70,7 +62,6 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
@@ -84,6 +75,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.beginnerapplication.navigation.InsuranceScreens
+import com.example.beginnerapplication.widgets.InsurerRow
+import getInsurers
 import kotlinx.coroutines.launch
 
 
@@ -151,18 +144,15 @@ fun LifeInsuranceQuoteContent() {
 @Composable
 fun InsurerListContent(
     navController: NavController,
-    insurersList: List<String> = listOf(
-        "Pineapple", "First for Women", "AA", "Outsurance",
-        "Old Mutual", "Discovery", "Momentum", "Sanlam"
-    )
-) {
+    insurersList: List<Insurer> = getInsurers()
+    ) {
     Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp)
         ) {
-            items(items = insurersList) { insurerName ->
-                InsurerRow(name = insurerName) { insurer ->
+            items(items = insurersList) {
+                InsurerRow(insurer = it) { insurer ->
                     navController.navigate(route = InsuranceScreens.DetailsScreen.name+"/$insurer")
                 }
                 HorizontalDivider(
@@ -175,39 +165,6 @@ fun InsurerListContent(
     }
 }
 
-//Card that displays all insurers details
-@Composable
-fun InsurerRow(name: String, onItemClick: (String) -> Unit = {}) {
-    Card(
-        modifier = Modifier
-            .padding(4.dp)
-            .fillMaxWidth()
-            .height(130.dp)
-            .clickable {},
-        shape = RoundedCornerShape(corner = CornerSize(16.dp)),
-        elevation = CardDefaults.cardElevation(2.dp),
-        onClick = { onItemClick(name) })
-    {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Surface(
-                modifier = Modifier
-                    .padding(12.dp)
-                    .size(100.dp),
-                shape = RectangleShape
-            )
-            {
-                Icon(
-                    imageVector = Icons.Default.AccountBox,
-                    contentDescription = "Insurer Image"
-                )
-            }
-            Text(text = name)
-        }
-    }
-}
 
 data class IconText(
     val iconRes: Int,

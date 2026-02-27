@@ -20,21 +20,19 @@ fun InsuranceNavigation() {
             HomeScreen(navController = navController)
         }
         //app/detail-screen/id=34
-        composable(InsuranceScreens.DetailsScreen.name+"/{insurerName}",
-            arguments = listOf(navArgument("insurerName")
-            {type = NavType.StringType})
-        ) {
-            backStackEntry ->
+        composable(
+            InsuranceScreens.DetailsScreen.name + "/{insurerName}",
+            arguments = listOf(
+                navArgument("insurerName")
+                { type = NavType.StringType })
+        ) { backStackEntry ->
 //            (navController = navController)
-            DetailsScreen(navController = navController,
-            backStackEntry.arguments?.getString("insurerName"))
+            DetailsScreen(
+                navController = navController,
+                backStackEntry.arguments?.getString("insurerName")
+            )
         }
 
-        composable("details/{insurerName}") { backStackEntry ->
-            val name = backStackEntry.arguments?.getString("insurerName")
-            // DetailScreen(name)
-        }
     }
-
 
 }
