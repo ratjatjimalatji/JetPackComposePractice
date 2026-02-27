@@ -83,6 +83,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.beginnerapplication.navigation.InsuranceScreens
 import kotlinx.coroutines.launch
 
 
@@ -108,11 +109,11 @@ fun HomeScreen(navController: NavController) {
         // innerPadding ensures content starts below the TopAppBar
         Box(modifier = Modifier.padding(innerPadding)) {
 
-            //InsurerListContent(navController = navController)
+            InsurerListContent(navController = navController)
 
             //MedicalAidSelectionContent()
 
-            LifeInsuranceQuoteContent()
+            //LifeInsuranceQuoteContent()
         }
     }
 }
@@ -161,11 +162,8 @@ fun InsurerListContent(
             contentPadding = PaddingValues(16.dp)
         ) {
             items(items = insurersList) { insurerName ->
-                InsurerRow(name = insurerName) { selectedName ->
-                    // NAVIGATION LOGIC:
-                    // Assuming you have a route named "details/{name}"
-                    // navController.navigate("details/$selectedName")
-                    Log.d("Navigation", "Navigating to details for: $selectedName")
+                InsurerRow(name = insurerName) { insurer ->
+                    navController.navigate(route = InsuranceScreens.DetailsScreen.name+"/$insurer")
                 }
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 8.dp),

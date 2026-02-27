@@ -5,6 +5,7 @@ enum class InsuranceScreens {
     HomeScreen,
     LifeInsuranceQuoteScreen,
     VehicleInsuranceInputScreen,
+    DetailsScreen,
     HomeInsuranceInputScreen,
     PersonalInsuranceInputScreen,
     BusinessInsuranceInputScreen,
@@ -17,6 +18,7 @@ enum class InsuranceScreens {
                 HomeScreen.name -> HomeScreen
                 MedicalAidSelectionScreen.name -> MedicalAidSelectionScreen
                 VehicleInsuranceInputScreen.name -> VehicleInsuranceInputScreen
+                DetailsScreen.name -> DetailsScreen
                 HomeInsuranceInputScreen.name -> HomeInsuranceInputScreen
                 PersonalInsuranceInputScreen.name -> PersonalInsuranceInputScreen
                 BusinessInsuranceInputScreen.name -> BusinessInsuranceInputScreen
