@@ -20,7 +20,7 @@ fun getInsurers(): List<Insurer> {
             description = "South Africa's largest medical scheme administrator, known for the Vitality rewards program.",
             contactNumber = "0860 99 88 77",
             images = listOf(
-                "https://example.com/discovery_logo.png",
+                "https://www.google.com/imgres?q=discovery%20medical%20aid&imgurl=https%3A%2F%2Fwww.medicalaid-quotes.co.za%2Fsites%2Fdefault%2Ffiles%2Fstyles%2Flogo_thumbnail%2Fpublic%2Fdiscovery-health_0.jpg%3Fitok%3DRA0PI-cH&imgrefurl=https%3A%2F%2Fwww.medicalaid-quotes.co.za%2Fmedical-aids%2Fdiscovery-health&docid=tHUsRwipdATlnM&tbnid=66rhbHoHQVkwmM&vet=12ahUKEwiC5e7e4PmSAxUfTUEAHb6YC3gQnPAOegQIGRAB..i&w=800&h=626&hcb=2&ved=2ahUKEwiC5e7e4PmSAxUfTUEAHb6YC3gQnPAOegQIGRAB",
                 "https://example.com/discovery_building.jpg"
             )
         ),

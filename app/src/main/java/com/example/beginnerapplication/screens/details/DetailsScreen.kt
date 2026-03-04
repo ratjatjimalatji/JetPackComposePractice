@@ -34,7 +34,7 @@ fun DetailsScreen(navController: NavController, insurerData: String?) {
                     // Row containing the "Movies" text with a 100dp spacer from the icon
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Spacer(modifier = Modifier.width(100.dp))
-                        Text(text =  "Movies")
+                        Text(text =  "Insurer details")
                     }
                 },
                 navigationIcon = {
