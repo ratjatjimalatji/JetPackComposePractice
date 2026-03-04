@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.beginnerapplication.screens.details.DetailsScreen
 import com.example.beginnerapplication.screens.home.HomeScreen
+import com.example.beginnerapplication.screens.medicalAidSelection.MedicalAidSelection
 
 @Composable
 fun InsuranceNavigation() {
@@ -15,7 +16,7 @@ fun InsuranceNavigation() {
 
     NavHost(navController = navController, startDestination = InsuranceScreens.HomeScreen.name) {
 
-
+        //Home screen
         composable(InsuranceScreens.HomeScreen.name) {
             HomeScreen(navController = navController)
         }
@@ -33,6 +34,10 @@ fun InsuranceNavigation() {
             )
         }
 
+        //Medical Aid Selection Screen
+        composable(InsuranceScreens.MedicalAidSelectionScreen.name) {
+            MedicalAidSelection(navController = navController)
+        }
     }
 
 }
