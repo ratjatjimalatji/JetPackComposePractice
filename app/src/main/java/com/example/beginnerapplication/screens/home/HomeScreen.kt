@@ -1,6 +1,7 @@
 package com.example.beginnerapplication.screens.home
 
 import Insurer
+import android.text.Layout
 import com.example.beginnerapplication.R
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.Animatable
@@ -28,6 +29,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -56,6 +58,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithCache
@@ -77,6 +80,8 @@ import androidx.navigation.NavController
 import com.example.beginnerapplication.navigation.InsuranceScreens
 import com.example.beginnerapplication.widgets.ActivePlan
 import com.example.beginnerapplication.widgets.InsurerRow
+import com.example.beginnerapplication.widgets.LifeInsuranceQuoteContent
+import com.example.beginnerapplication.widgets.MedicalAidSelectionContent
 import getInsurers
 import kotlinx.coroutines.launch
 
@@ -94,40 +99,63 @@ fun HomeScreen(navController: NavController) {
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    containerColor = Color(0xFFF5F5F5),
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
         }
     ) { innerPadding ->
         // innerPadding ensures content starts below the TopAppBar
-        Box(modifier = Modifier.padding(innerPadding)) {
+        Box( modifier = Modifier.background(Color.White)
+            .padding(innerPadding)) {
 
-            InsurerListContent(navController = navController)
+            Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
 
-            //MedicalAidSelectionContent()
+                Text("Select a Service", style = MaterialTheme.typography.headlineSmall)
+                Spacer(modifier = Modifier.height(16.dp))
 
-            //LifeInsuranceQuoteContent()
+                // 1. Button for Insurers
+                Button(
+                    onClick = {
+                        // This is a regular function call, which is allowed here!
+                        navController.navigate("insurers_list")
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                ) {
+                    Text("View Insurers")
+                }
+
+                // 2. Button for Medical Aid
+                Button(
+                    onClick = { navController.navigate(InsuranceScreens.MedicalAidSelectionScreen.name) },
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                ) {
+                    Text("Medical Aid Selection")
+                }
+
+                // 3. Button for Life Insurance
+                Button(
+                    onClick = { navController.navigate(InsuranceScreens.LifeInsuranceQuoteScreen.name) },
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                ) {
+                    Text("Life Insurance Quote")
+                }
+
+                // 4. Button for Vehicle (Example of 4th button)
+                Button(
+                    onClick = { navController.navigate(InsuranceScreens.VehicleInsuranceInputScreen.name) },
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                ) {
+                    Text("Vehicle Insurance")
+                }
+            }
+        }
         }
     }
-}
 
 
 
 
-
-@Composable
-fun LifeInsuranceQuoteContent() {
-    // Wrapped in a LazyColumn  to handle scrolling
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        item { ActivePlan(count = 1, typeOfPlan = "medical") }
-        item { SliderAdvancedExample() }
-    }
-}
 
 @Composable
 fun InsurerListContent(
@@ -193,7 +221,7 @@ private fun Checkboxes() {
             Row(
                 modifier = Modifier.fillMaxWidth(),
 
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = CenterVertically,
 
                 ) {
                 rowItems.forEach { info ->
@@ -201,7 +229,7 @@ private fun Checkboxes() {
                     val originalIndex = checkboxOptions.indexOf(info)
 
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                        verticalAlignment = CenterVertically,
                         //modifier = Modifier.weight(1f),
                         horizontalArrangement = Arrangement.End// Ensure equal width for both items
                     ) {
@@ -228,59 +256,8 @@ private fun Checkboxes() {
 
     Spacer(modifier = Modifier.height(12.dp))
 
-    SliderAdvancedExample()
-
-
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
-@Composable
-fun SliderAdvancedExample() {
-    var sliderPosition by remember { mutableFloatStateOf(500000f) }
-    val sliderInMillions = sliderPosition / 1000000
-    val formattedValue = "%.2f".format(sliderInMillions)
-
-    CenteredTitle(title = "Coverage Details")
-    ReusableOuterCard("Coverage Details", R.drawable.ic_android) {
-        Box(
-            modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center,
-        ) {
-            Card() {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp, vertical = 10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Row()
-                    {
-                        Text(text = "How much cover do you need? ", fontWeight = FontWeight.Bold)
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Text(
-                            text = "R$formattedValue m",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color(0xFF823199)
-                        )
-                    }
-
-                    Slider(
-                        value = sliderPosition,
-                        onValueChange = { sliderPosition = it },
-                        valueRange = 500000f..10000000f,
-                        steps = 189
-                    )
-                    Text(
-                        text = "Range: R500K - R10m",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF823199)
-                    )
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun CustomTextField(
@@ -324,7 +301,7 @@ fun CustomTextField(
 @Composable
 fun ReusableOuterCard(
     title: String,
-    iconRes: Int,
+    iconRes: Int? = null,
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit // Allows children to use Column features
 ) {
@@ -348,13 +325,14 @@ fun ReusableOuterCard(
             Row(
                 modifier = Modifier
                     .align(Alignment.Start)
-                    .padding(start = 20.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                    .padding(start = 10.dp),
+                verticalAlignment = CenterVertically,
             ) {
-                Icon(painterResource(iconRes), contentDescription = null, tint = Color(0xFF823199))
+                iconRes?.let { Icon(painterResource(it), contentDescription = null, tint = Color(0xFF823199)) }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = title, fontWeight = FontWeight.Bold)
             }
+
             // This is where your inner card (or anything else) will be injected
             content()
         }
@@ -376,13 +354,13 @@ fun DependentStepper(
         Row(
             modifier = Modifier
                 .padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = CenterVertically,
             horizontalArrangement = Arrangement.Start // Pushes text to left, controls to right
         ) {
 
             Text(text = "Spouse & children", modifier = Modifier.weight(1f))
             // Increment number of dependents Controls
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = CenterVertically) {
                 IconButton(onClick = onDecrement) {
                     Icon(
                         painterResource(R.drawable.ic_minus),
@@ -513,7 +491,7 @@ fun ProductInfoRow(productItem: Product) {
                 .padding(16.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(

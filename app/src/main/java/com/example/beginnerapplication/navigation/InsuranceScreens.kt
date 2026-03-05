@@ -4,6 +4,7 @@ enum class InsuranceScreens {
     //Each screen must be mentioned here
     HomeScreen,
     LifeInsuranceQuoteScreen,
+    InsurerListScreen,
     VehicleInsuranceInputScreen,
     DetailsScreen,
     HomeInsuranceInputScreen,
@@ -17,6 +18,8 @@ enum class InsuranceScreens {
             when (route?.substringBefore("/")){
                 HomeScreen.name -> HomeScreen
                 MedicalAidSelectionScreen.name -> MedicalAidSelectionScreen
+                InsurerListScreen.name -> InsurerListScreen
+                LifeInsuranceQuoteScreen.name -> LifeInsuranceQuoteScreen
                 VehicleInsuranceInputScreen.name -> VehicleInsuranceInputScreen
                 DetailsScreen.name -> DetailsScreen
                 HomeInsuranceInputScreen.name -> HomeInsuranceInputScreen

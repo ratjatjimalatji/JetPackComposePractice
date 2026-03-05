@@ -1,4 +1,4 @@
-package com.example.beginnerapplication.screens.medicalAidSelection
+package com.example.beginnerapplication.screens.lifeInsurance
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,21 +24,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.beginnerapplication.widgets.MedicalAidSelectionContent
-
+import com.example.beginnerapplication.widgets.LifeInsuranceQuoteContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MedicalAidSelection(navController: NavController) {
+fun LifeInsuranceQuoteScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    // Row containing the "Movies" text with a 100dp spacer from the icon
+
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Spacer(modifier = Modifier.width(20.dp))
-                        Text(text =  "Medical Aid Selection")
+                        Text(text =  "Life Insurance Quote")
                     }
                 },
                 navigationIcon = {
@@ -63,14 +62,13 @@ fun MedicalAidSelection(navController: NavController) {
     ) { innerPadding ->
         // Main Body Content
         Column(
-
             modifier = Modifier
                 .background(Color.White)
                 .fillMaxSize()
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally, // Center horizontally
         ) {
-            MedicalAidSelectionContent()
+            LifeInsuranceQuoteContent()
         }
     }
 }

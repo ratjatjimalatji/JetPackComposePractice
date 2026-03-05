@@ -1,15 +1,24 @@
 package com.example.beginnerapplication.screens.details
 
+import android.R
+import android.R.attr.color
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -20,12 +29,20 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.beginnerapplication.widgets.InsurerRow
+import getInsurers
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(navController: NavController, insurerData: String?) {
+
+    val newInsurerList = getInsurers().filter{
+        insurer ->
+        insurer.id == insurerData
+    }
 
     Scaffold(
         topBar = {
@@ -50,7 +67,7 @@ fun DetailsScreen(navController: NavController, insurerData: String?) {
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    containerColor = (Color(0xFFF5F5F5)),
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
@@ -60,15 +77,28 @@ fun DetailsScreen(navController: NavController, insurerData: String?) {
         // Main Body Content
         Column(
             modifier = Modifier
+                .background(Color.White)
                 .fillMaxSize()
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally, // Center horizontally
-            verticalArrangement = Arrangement.Center           // Center vertically
+            verticalArrangement = Arrangement.Top           // Center vertically
         ) {
-            Text(
-                text =  insurerData?: "No Data Available",
-                style = MaterialTheme.typography.headlineMedium
-            )
+            InsurerRow(insurer = newInsurerList.first())
+            Spacer(modifier = Modifier.height(8.dp))
+            Divider()
+            Text(text = "About this insurer")
+//            LazyRow{
+//                items(newInsurerList.first().images){ images ->
+//                    Card(modifier = Modifier
+//                        .padding(5.dp)
+//                        .size(240.dp)
+//                    , elevation = 5.dp){
+//                        Image(painter = rememberImagePainter(data = image),
+//                            contentDescription = "Insurer Image"
+//                        )
+//                    }
+//                }
+//            }
         }
     }
 }

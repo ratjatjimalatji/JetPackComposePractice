@@ -1,10 +1,8 @@
 package com.example.beginnerapplication.widgets
 
 import Insurer
-import ads_mobile_sdk.h6
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,36 +18,40 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -60,11 +62,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
-import coil3.compose.rememberAsyncImagePainter
 import com.example.beginnerapplication.R
+import com.example.beginnerapplication.screens.home.CenteredTitle
 import com.example.beginnerapplication.screens.home.DependentsScreen
 import com.example.beginnerapplication.screens.home.ReusableOuterCard
+
 import getInsurers
 
 
@@ -79,21 +81,21 @@ import getInsurers
 
     Card(
         modifier = Modifier
+
             .padding(4.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(corner = CornerSize(16.dp)),
         elevation = CardDefaults.cardElevation(2.dp),
         onClick = { onItemClick(insurer.id) }) //USE ONCLICK AND NOT.CLICKABLE
     {
-        Column() {
+        Column(modifier = Modifier.background(Color(0xFFF5F5F5))) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start) {
-                Surface(
+                Box( contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .padding(12.dp)
-                        .size(100.dp),
-                    shape = RectangleShape
+                        .size(100.dp).background(color = Color.White, shape = RoundedCornerShape(15.dp))
                 )
                 {
 //                //coil library allows images to be retrieved from URL
@@ -104,13 +106,14 @@ import getInsurers
 //                       transformation()
 //                   } )
                     Icon(
-                        painter = painterResource(R.drawable.ic_group), null,
-                        modifier = Modifier.padding(20.dp)
+                        painter = painterResource(R.drawable.ic_group), contentDescription = null,
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .fillMaxSize()
                     )
                 }
                 Column(
                     modifier = Modifier.padding(2.dp)
-                        .background(Color.Green)
                         .fillMaxWidth(0.9f)
                 ) {
                     Text(
@@ -165,24 +168,146 @@ import getInsurers
                             {
                                 append(insurer.description)
                             }
-                        })
+                        }, modifier = Modifier.padding(4.dp))
+                        Divider(modifier = Modifier.padding(3.dp))
+                        Text(text = "Year established: ${insurer.yearEstablished}")
+                        Text(text = "Contact details: ${insurer.contactNumber}")
                     }
                 }
             }
         }
     }
 }
+//Life Insurance Quote
+@Composable
+fun LifeInsuranceQuoteContent() {
+    // Wrapped in a LazyColumn  to handle scrolling
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        item { ActivePlan(count = 1, typeOfPlan = "medical") }
+        item { SliderAdvancedExample() }
+        item { OccupationDropDown() }
+    }
+}
+@Composable
+fun OccupationDropDown() {
+    ReusableOuterCard(
+        "Occupation",null,
+    ) {
 
+        val dropDownOptions = remember {
+            listOf(
+                "Office Administrator", "Human Resources Coordinator", "Project Manager", "Accountant", "Business Analyst", "Digital Marketing Specialist", "Legal Advisor", "Systems Administrator", "Financial Planner", "Operations Manager",
+ "Retail Sales Assistant", "Cashier", "Call Centre Operator", "Warehouse Worker", "Security Guard"
+            )
+        }
+        DropdownMenu("Select occupation", dropDownOptions, )
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+fun SliderAdvancedExample() {
+    var sliderPosition by remember { mutableFloatStateOf(500000f) }
+    val sliderInMillions = sliderPosition / 1000000
+    val formattedValue = "%.2f".format(sliderInMillions)
+
+    CenteredTitle(title = "Coverage Details")
+    ReusableOuterCard("Coverage Details", R.drawable.ic_android) {
+        Box(
+            modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center,
+        ) {
+            Card(modifier = Modifier) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = Color(0xFFF5F5F5))
+                        .padding(5.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Row()
+                    {
+                        Text(text = "How much cover do you need? ", fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.width(5.dp))
+
+                    }
+                    Text(
+                        text = "R$formattedValue m",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF823199),
+
+                        )
+                    Slider(
+                        modifier = Modifier,
+                        value = sliderPosition,
+                        onValueChange = { sliderPosition = it },
+                        valueRange = 500000f..10000000f,
+                        steps = 189,
+                        colors = SliderDefaults.colors(
+                            activeTickColor = Color(0xFF823199),
+                            inactiveTickColor = Color(0xFF823199),
+                            thumbColor = Color(0xFF823199),
+                            activeTrackColor = Color(0xFF927199),
+                            inactiveTrackColor = Color.White,
+                            disabledThumbColor = Color.Gray,
+                        )
+                    )
+                    Text(
+                        text = "Range: R500K - R10m",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF823199)
+                    )
+                }
+            }
+        }
+    }
+    var list = listOf(
+        TextSwitch("Smoker status", "Smoked in the last 12 month"),
+    TextSwitch("Dangerous Hobbies", "Skydiving, racing, etc.")
+    )
+TextWithSwitch(list)}
+
+    data class TextSwitch(val header:String, val description:String)
+    @Composable
+    fun TextWithSwitch( lifeStyleRiskSwitchList: List<TextSwitch>) {
+ReusableOuterCard("Lifestyle & risk", R.drawable.ic_android) {
+        for (i in lifeStyleRiskSwitchList) {
+            var checked by remember { mutableStateOf(false) }
+
+            Row(modifier = Modifier.padding(4.dp).background(Color.White)) {
+                Column(modifier = Modifier.fillMaxWidth(0.9f)) {
+                    Column() { Text(i.header, fontWeight = FontWeight.Bold) }
+                    Column() { Text(i.description) }
+                }
+                Column() {
+                    Switch(
+                        checked = checked,
+                        onCheckedChange = { checked = it },
+                        colors = SwitchDefaults.colors(
+                            checkedTrackColor = Color(0xFF823199)
+                        , uncheckedTrackColor = Color(0xFFF5F5F5))
+                    )
+                }
+            }
+            if(lifeStyleRiskSwitchList.last() != i)
+                HorizontalDivider()
+        }
+    }}
 
 //Medical Aid Selection
-
 @Composable
 fun MedicalAidSelectionContent() {
     // Wrapped in a LazyColumn  to handle scrolling
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item { ActivePlan(count = 1, typeOfPlan = "medical") }
         item { DependentsScreen() }
@@ -374,28 +499,29 @@ fun MonthlyIncomeBracket() {
     ReusableOuterCard(
         "Monthly Income Bracket", R.drawable.ic_currency,
     ) {
-        DropdownDemo()
+
+        val dropDownOptions = remember {
+            listOf(
+                "R0 - R5,000",
+                "R5,001 - R10,000",
+                "R10,001 - R20,000",
+                "R20,001 - R40,000",
+                "R40,001 - R60,000",
+                "R60,001 - R80,000",
+                "R80,001 - R100,000",
+                "Over R100,000"
+            )
+        }
+        DropdownMenu("Select Monthly Income", dropDownOptions, )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropdownDemo() {
+fun DropdownMenu(dropDownLabel: String, dropDownOptions: List<String>) {
     // 1. Cleaner naming conventions
     var isExpanded by remember { mutableStateOf(false) }
-    val monthlyIncomes = remember {
-        listOf(
-            "R0 - R5,000",
-            "R5,001 - R10,000",
-            "R10,001 - R20,000",
-            "R20,001 - R40,000",
-            "R40,001 - R60,000",
-            "R60,001 - R80,000",
-            "R80,001 - R100,000",
-            "Over R100,000"
-        )
-    }
-    var selectedMonthlyIncome by remember { mutableStateOf(monthlyIncomes[2]) } // Default to first item or empty
+    var selectedOption by remember { mutableStateOf(dropDownOptions[2]) } // Default to first item or empty
 
     Column(Modifier.fillMaxWidth(0.9f)) {
         // 2. Use the specialized Dropdown Container
@@ -406,9 +532,9 @@ fun DropdownDemo() {
             //
             OutlinedTextField(
                 readOnly = true,
-                value = selectedMonthlyIncome,
+                value = selectedOption,
                 onValueChange = {},
-                label = { Text("Select Monthly Income") },
+                label = { Text(dropDownLabel) },
                 textStyle = LocalTextStyle.current.copy(color = Color.Black),
                 // 4. Use the built-in trailing icon that animates automatically
                 trailingIcon = {
@@ -424,11 +550,11 @@ fun DropdownDemo() {
                 expanded = isExpanded,
                 onDismissRequest = { isExpanded = false }
             ) {
-                monthlyIncomes.forEach { monthlyIncome ->
+                dropDownOptions.forEach { monthlyIncome ->
                     DropdownMenuItem(
                         text = { Text(monthlyIncome) },
                         onClick = {
-                            selectedMonthlyIncome = monthlyIncome
+                            selectedOption = monthlyIncome
                             isExpanded = false
                         },
                         // 5. Highlighting the selection (Best Practice)
