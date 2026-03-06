@@ -1,42 +1,31 @@
 package com.example.beginnerapplication.screens.home
 
 import Insurer
-import android.text.Layout
 import com.example.beginnerapplication.R
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,17 +33,14 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -78,10 +64,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.beginnerapplication.navigation.InsuranceScreens
-import com.example.beginnerapplication.widgets.ActivePlan
 import com.example.beginnerapplication.widgets.InsurerRow
-import com.example.beginnerapplication.widgets.LifeInsuranceQuoteContent
-import com.example.beginnerapplication.widgets.MedicalAidSelectionContent
 import getInsurers
 import kotlinx.coroutines.launch
 
@@ -299,25 +282,26 @@ fun CustomTextField(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReusableOuterCard(
+fun ReusableContentHolderRow(
     title: String,
     iconRes: Int? = null,
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit // Allows children to use Column features
 ) {
-    Card(
+    Row(
         modifier = modifier
             .fillMaxWidth(0.95f)
-            .padding(vertical = 10.dp), colors = CardDefaults.cardColors(
-            containerColor = Color.White // Card background color
-        ), elevation = CardDefaults.cardElevation(
-            defaultElevation = 8.dp
-        )
+            .padding(vertical = 5.dp)
+//        , colors = CardDefaults.cardColors(
+//            containerColor = Color.White // Card background color
+//        ), elevation = CardDefaults.cardElevation(
+//            defaultElevation = 8.dp
+//        )
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+                .fillMaxWidth(),
+                //.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally, // CENTERS ALL CHILDREN
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -335,6 +319,8 @@ fun ReusableOuterCard(
 
             // This is where your inner card (or anything else) will be injected
             content()
+            Spacer(modifier = Modifier.height(5.dp))
+            HorizontalDivider(modifier = Modifier.fillMaxWidth(0.95f).background(Color.LightGray))
         }
     }
 }
@@ -345,15 +331,16 @@ fun DependentStepper(
     onIncrement: () -> Unit,
     onDecrement: () -> Unit
 ) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+    Row(
+        //colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
         modifier = Modifier
             .fillMaxWidth(0.9f)
     ) {
 
         Row(
             modifier = Modifier
-                .padding(10.dp),
+                //.background(Color.Red),
+                ,
             verticalAlignment = CenterVertically,
             horizontalArrangement = Arrangement.Start // Pushes text to left, controls to right
         ) {
@@ -388,7 +375,7 @@ fun DependentStepper(
 @Composable
 fun DependentsScreen() {
     var count by remember { mutableIntStateOf(0) }
-    ReusableOuterCard(
+    ReusableContentHolderRow(
         title = "Number of dependents",
         iconRes = R.drawable.ic_group
     ) {

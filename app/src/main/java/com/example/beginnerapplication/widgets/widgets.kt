@@ -65,7 +65,7 @@ import androidx.compose.ui.unit.sp
 import com.example.beginnerapplication.R
 import com.example.beginnerapplication.screens.home.CenteredTitle
 import com.example.beginnerapplication.screens.home.DependentsScreen
-import com.example.beginnerapplication.screens.home.ReusableOuterCard
+import com.example.beginnerapplication.screens.home.ReusableContentHolderRow
 
 import getInsurers
 
@@ -188,15 +188,21 @@ fun LifeInsuranceQuoteContent() {
         verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        var list = listOf(
+            TextSwitch("Smoker status", "Smoked in the last 12 month"),
+            TextSwitch("Dangerous Hobbies", "Skydiving, racing, etc.")
+        )
+
         item { ActivePlan(count = 1, typeOfPlan = "medical") }
         item { SliderAdvancedExample() }
+        item { TextWithSwitch(list) }
         item { OccupationDropDown() }
     }
 }
 @Composable
 fun OccupationDropDown() {
-    ReusableOuterCard(
-        "Occupation",null,
+    ReusableContentHolderRow(
+        "Occupation",R.drawable.ic_briefcase,
     ) {
 
         val dropDownOptions = remember {
@@ -217,7 +223,7 @@ fun SliderAdvancedExample() {
     val formattedValue = "%.2f".format(sliderInMillions)
 
     CenteredTitle(title = "Coverage Details")
-    ReusableOuterCard("Coverage Details", R.drawable.ic_android) {
+    ReusableContentHolderRow("Coverage Details", R.drawable.ic_shield_blank) {
         Box(
             modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center,
         ) {
@@ -266,16 +272,13 @@ fun SliderAdvancedExample() {
             }
         }
     }
-    var list = listOf(
-        TextSwitch("Smoker status", "Smoked in the last 12 month"),
-    TextSwitch("Dangerous Hobbies", "Skydiving, racing, etc.")
-    )
-TextWithSwitch(list)}
+
+}
 
     data class TextSwitch(val header:String, val description:String)
     @Composable
     fun TextWithSwitch( lifeStyleRiskSwitchList: List<TextSwitch>) {
-ReusableOuterCard("Lifestyle & risk", R.drawable.ic_android) {
+ReusableContentHolderRow("Lifestyle & risk", R.drawable.ic_heart) {
         for (i in lifeStyleRiskSwitchList) {
             var checked by remember { mutableStateOf(false) }
 
@@ -305,14 +308,14 @@ fun MedicalAidSelectionContent() {
     // Wrapped in a LazyColumn  to handle scrolling
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
+        //contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item { ActivePlan(count = 1, typeOfPlan = "medical") }
         item { DependentsScreen() }
         item { MonthlyIncomeBracket() }
-        item { IconTextSquare() }
+        item { GroupOfSquareIconsWithText() }
     }
 }
 
@@ -323,9 +326,9 @@ fun ActivePlan(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(0.9f)
+            .fillMaxWidth(0.95f)
             .clickable { },
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation()
     ) {
         Row(
             modifier = Modifier.background(Color.White),
@@ -374,6 +377,7 @@ fun ActivePlan(
             }
         }
     }
+    HorizontalDivider(modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 5.dp))
 }
 
 data class IconText(
@@ -383,7 +387,7 @@ data class IconText(
 )
 
 @Composable
-fun IconTextSquare() {
+fun GroupOfSquareIconsWithText() {
 
     var selectedItem by remember { mutableStateOf<IconText?>(null) }
 
@@ -404,9 +408,9 @@ fun IconTextSquare() {
             "A middle-ground approach that combines \"peace of mind\" for hospital stays with a dedicated personal savings account. A portion of your monthly premium is set aside to cover day-to-day medical expenses like GP visits, prescribed medicine, and optometry. Once your savings are depleted, you typically pay for out-of-hospital costs yourself"
         )
     )
-    ReusableOuterCard(
+    ReusableContentHolderRow(
         "Insurance Type",
-        R.drawable.ic_android
+        R.drawable.ic_shield
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
@@ -419,9 +423,11 @@ fun IconTextSquare() {
                     // 1. The outer Column handles the positioning of 1 CARD
                     Column(
                         modifier = Modifier
+                            .padding(top =5.dp, start = 5.dp, end = 5.dp)
                             .weight(1f)
                             .fillMaxHeight()
-                            .padding(5.dp)
+                            ,
+                        verticalArrangement = Arrangement.Center
                     ) {
                         val isSelected = selectedItem == item // checks if the card is selected
                         Card(
@@ -447,7 +453,7 @@ fun IconTextSquare() {
                                 // The Circle with Icon inside of it
                                 Box(
                                     modifier = Modifier
-                                        .size(40.dp) //circle size
+                                        .size(70.dp) //circle size
                                         .background(color = Color.LightGray, shape = CircleShape),
                                     contentAlignment = Alignment.Center // Centers the Icon inside the Circle
                                 ) {
@@ -455,6 +461,8 @@ fun IconTextSquare() {
                                         painter = painterResource(item.iconRes),
                                         contentDescription = null,
                                         tint = Color(0xFF823199),
+                                        modifier = Modifier
+                                            .size(40.dp)
                                     )
                                 }
                                 // The label below the circle w/ Icon
@@ -463,10 +471,8 @@ fun IconTextSquare() {
                                     fontWeight = FontWeight.Medium,
                                     color = Color.Black,
                                     textAlign = TextAlign.Center,
-                                    minLines = 2,
-                                    maxLines = 2,
                                     overflow = TextOverflow.Ellipsis,
-                                    style = MaterialTheme.typography.labelSmall
+                                    style = MaterialTheme.typography.titleSmall
                                 )
                             }
                         }
@@ -475,7 +481,7 @@ fun IconTextSquare() {
             }
             // Description Area
             selectedItem?.let { item ->
-                Column(modifier = Modifier.padding(10.dp)) {
+                Column(modifier = Modifier.padding(top = 10.dp, start = 10.dp, end = 10.dp)) {
                     Text(
                         text = item.text.uppercase(),
                         color = Color(0xFF823199),
@@ -496,7 +502,7 @@ fun IconTextSquare() {
 
 @Composable
 fun MonthlyIncomeBracket() {
-    ReusableOuterCard(
+    ReusableContentHolderRow(
         "Monthly Income Bracket", R.drawable.ic_currency,
     ) {
 
