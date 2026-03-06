@@ -77,8 +77,9 @@ fun HomeScreen(navController: NavController) {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Medical Aid Screen",
-                        style = MaterialTheme.typography.titleLarge
+                        text = "Insurance Application",
+                        style = MaterialTheme.typography.titleLarge,
+
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -291,7 +292,7 @@ fun ReusableContentHolderRow(
     Row(
         modifier = modifier
             .fillMaxWidth(0.95f)
-            .padding(vertical = 5.dp)
+            .padding(bottom = 5.dp)
 //        , colors = CardDefaults.cardColors(
 //            containerColor = Color.White // Card background color
 //        ), elevation = CardDefaults.cardElevation(
@@ -319,7 +320,7 @@ fun ReusableContentHolderRow(
 
             // This is where your inner card (or anything else) will be injected
             content()
-            Spacer(modifier = Modifier.height(5.dp))
+            Spacer(modifier = Modifier.height(2.dp))
             HorizontalDivider(modifier = Modifier.fillMaxWidth(0.95f).background(Color.LightGray))
         }
     }

@@ -1,6 +1,8 @@
 package com.example.beginnerapplication.widgets
 
 import Insurer
+import android.annotation.SuppressLint
+import android.widget.Button
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -24,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
@@ -68,6 +71,7 @@ import com.example.beginnerapplication.screens.home.DependentsScreen
 import com.example.beginnerapplication.screens.home.ReusableContentHolderRow
 
 import getInsurers
+import org.w3c.dom.Text
 
 
 //Card that displays all insurers details
@@ -169,7 +173,7 @@ import getInsurers
                                 append(insurer.description)
                             }
                         }, modifier = Modifier.padding(4.dp))
-                        Divider(modifier = Modifier.padding(3.dp))
+                        HorizontalDivider(modifier = Modifier.padding(3.dp))
                         Text(text = "Year established: ${insurer.yearEstablished}")
                         Text(text = "Contact details: ${insurer.contactNumber}")
                     }
@@ -188,7 +192,7 @@ fun LifeInsuranceQuoteContent() {
         verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        var list = listOf(
+        val list = listOf(
             TextSwitch("Smoker status", "Smoked in the last 12 month"),
             TextSwitch("Dangerous Hobbies", "Skydiving, racing, etc.")
         )
@@ -197,6 +201,7 @@ fun LifeInsuranceQuoteContent() {
         item { SliderAdvancedExample() }
         item { TextWithSwitch(list) }
         item { OccupationDropDown() }
+        item { ButtonWithText("Compare 5 plans") }
     }
 }
 @Composable
@@ -214,6 +219,7 @@ fun OccupationDropDown() {
         DropdownMenu("Select occupation", dropDownOptions, )
     }
 }
+@SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
@@ -222,8 +228,7 @@ fun SliderAdvancedExample() {
     val sliderInMillions = sliderPosition / 1000000
     val formattedValue = "%.2f".format(sliderInMillions)
 
-    CenteredTitle(title = "Coverage Details")
-    ReusableContentHolderRow("Coverage Details", R.drawable.ic_shield_blank) {
+        ReusableContentHolderRow("Coverage Details", R.drawable.ic_shield_blank) {
         Box(
             modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center,
         ) {
@@ -258,7 +263,7 @@ fun SliderAdvancedExample() {
                             activeTickColor = Color(0xFF823199),
                             inactiveTickColor = Color(0xFF823199),
                             thumbColor = Color(0xFF823199),
-                            activeTrackColor = Color(0xFF927199),
+                            activeTrackColor = Color(0xFF823199),
                             inactiveTrackColor = Color.White,
                             disabledThumbColor = Color.Gray,
                         )
@@ -316,6 +321,7 @@ fun MedicalAidSelectionContent() {
         item { DependentsScreen() }
         item { MonthlyIncomeBracket() }
         item { GroupOfSquareIconsWithText() }
+        item { ButtonWithText("Compare 8 plans") }
     }
 }
 
@@ -572,4 +578,25 @@ fun DropdownMenu(dropDownLabel: String, dropDownOptions: List<String>) {
     }
 }
 
+@Composable
+fun ButtonWithText(text: String) {
+    Box(
+        modifier = Modifier
+            .background(Color(0xFF823199), shape = RoundedCornerShape(5.dp))
+            .fillMaxWidth(0.8f)
+            .clickable{}
+            .padding(10.dp),
+        contentAlignment = Alignment.Center,
 
+        ) {
+        Row() {
+            Text(text, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Spacer(modifier = Modifier.width(10.dp))
+            Icon(
+                Icons.Default.ArrowForward,
+                contentDescription = "forward arrow",
+                tint = Color.White
+            )
+        }
+    }
+}
