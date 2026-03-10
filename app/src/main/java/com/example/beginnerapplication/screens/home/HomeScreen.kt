@@ -101,8 +101,7 @@ fun HomeScreen(navController: NavController) {
                 // 1. Button for Insurers
                 Button(
                     onClick = {
-                        // This is a regular function call, which is allowed here!
-                        navController.navigate("insurers_list")
+                        navController.navigate(InsuranceScreens.InsurerListScreen.name)
                     },
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                 ) {
@@ -137,38 +136,7 @@ fun HomeScreen(navController: NavController) {
         }
     }
 
-
-
-
-
-@Composable
-fun InsurerListContent(
-    navController: NavController,
-    insurersList: List<Insurer> = getInsurers()
-    ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            items(items = insurersList) {
-                InsurerRow(insurer = it) { insurer ->
-                    navController.navigate(route = InsuranceScreens.DetailsScreen.name+"/$insurer")
-                }
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    thickness = 1.dp,
-                    color = Color.LightGray
-                )
-            }
-        }
-    }
-}
-
-
-
-
-
+//product input composables
 @Composable
 fun CenteredTitle(title: String) {
     Text(
@@ -242,7 +210,6 @@ private fun Checkboxes() {
 
 }
 
-
 @Composable
 fun CustomTextField(
     value: String,
@@ -281,114 +248,6 @@ fun CustomTextField(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ReusableContentHolderRow(
-    title: String,
-    iconRes: Int? = null,
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit // Allows children to use Column features
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth(0.95f)
-            .padding(bottom = 5.dp)
-//        , colors = CardDefaults.cardColors(
-//            containerColor = Color.White // Card background color
-//        ), elevation = CardDefaults.cardElevation(
-//            defaultElevation = 8.dp
-//        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(),
-                //.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally, // CENTERS ALL CHILDREN
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            // Header
-            Row(
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(start = 10.dp),
-                verticalAlignment = CenterVertically,
-            ) {
-                iconRes?.let { Icon(painterResource(it), contentDescription = null, tint = Color(0xFF823199)) }
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = title, fontWeight = FontWeight.Bold)
-            }
-
-            // This is where your inner card (or anything else) will be injected
-            content()
-            Spacer(modifier = Modifier.height(2.dp))
-            HorizontalDivider(modifier = Modifier.fillMaxWidth(0.95f).background(Color.LightGray))
-        }
-    }
-}
-
-@Composable
-fun DependentStepper(
-    count: Int,
-    onIncrement: () -> Unit,
-    onDecrement: () -> Unit
-) {
-    Row(
-        //colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
-        modifier = Modifier
-            .fillMaxWidth(0.9f)
-    ) {
-
-        Row(
-            modifier = Modifier
-                //.background(Color.Red),
-                ,
-            verticalAlignment = CenterVertically,
-            horizontalArrangement = Arrangement.Start // Pushes text to left, controls to right
-        ) {
-
-            Text(text = "Spouse & children", modifier = Modifier.weight(1f))
-            // Increment number of dependents Controls
-            Row(verticalAlignment = CenterVertically) {
-                IconButton(onClick = onDecrement) {
-                    Icon(
-                        painterResource(R.drawable.ic_minus),
-                        contentDescription = "Decrease"
-                    )
-                }
-
-                Text(
-                    text = count.toString(),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-
-                IconButton(onClick = onIncrement) {
-                    Icon(
-                        painterResource(R.drawable.ic_add),
-                        contentDescription = "Increase"
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun DependentsScreen() {
-    var count by remember { mutableIntStateOf(0) }
-    ReusableContentHolderRow(
-        title = "Number of dependents",
-        iconRes = R.drawable.ic_group
-    ) {
-        DependentStepper(
-            count = count,
-            onIncrement = { count++ },
-            onDecrement = { if (count > 0) count-- }
-        )
-    }
-}
-
-// 2. THE DEDICATED PREVIEW
 @Preview(showBackground = true, name = "Form Example")
 @Composable
 fun CustomTextFieldPreview() {

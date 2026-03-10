@@ -8,7 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.beginnerapplication.screens.details.DetailsScreen
 import com.example.beginnerapplication.screens.home.HomeScreen
-import com.example.beginnerapplication.screens.home.InsurerListContent
+import com.example.beginnerapplication.widgets.InsurerListContent
 import com.example.beginnerapplication.screens.lifeInsurance.LifeInsuranceQuoteScreen
 import com.example.beginnerapplication.screens.medicalAidSelection.MedicalAidSelection
 
@@ -46,7 +46,7 @@ fun InsuranceNavigation() {
             LifeInsuranceQuoteScreen(navController = navController)
         }
 
-        composable("insurers_list") {
+        composable(InsuranceScreens.InsurerListScreen.name) {
             InsurerListContent(navController = navController)
         }
     }

@@ -2,7 +2,6 @@ package com.example.beginnerapplication.widgets
 
 import Insurer
 import android.annotation.SuppressLint
-import android.widget.Button
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -10,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,13 +32,13 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -49,10 +50,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -65,14 +68,62 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.beginnerapplication.R
-import com.example.beginnerapplication.screens.home.CenteredTitle
-import com.example.beginnerapplication.screens.home.DependentsScreen
-import com.example.beginnerapplication.screens.home.ReusableContentHolderRow
+import com.example.beginnerapplication.model.DescriptiveTextWithIcon
+import com.example.beginnerapplication.model.TextSwitch
+import com.example.beginnerapplication.navigation.InsuranceScreens
+
 
 import getInsurers
-import org.w3c.dom.Text
 
+const val customPurple: Long = 0xFF823199
+const val lightGray: Long = 0xFFF5F5F5
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ReusableContentHolderRow(
+    title: String,
+    iconRes: Int? = null,
+    content: @Composable ColumnScope.() -> Unit // Allows children to use Column features
+) {
+    Row( //Changed from card to row
+        modifier = Modifier
+            .fillMaxWidth(0.95f)
+            .padding(bottom = 5.dp)
+        //Uncomment below if you want to revert to a card
+//        , colors = CardDefaults.cardColors(
+//            containerColor = Color.White // Card background color
+//        ), elevation = CardDefaults.cardElevation(
+//            defaultElevation = 8.dp
+//        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+            //.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally, // CENTERS ALL CHILDREN
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // Header
+            Row(
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(start = 10.dp),
+                verticalAlignment = CenterVertically,
+            ) {
+                iconRes?.let { Icon(painterResource(it), contentDescription = null, tint = Color(0xFF823199)) }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = title, fontWeight = FontWeight.Bold)
+            }
+
+            // This is where your inner card (or anything else) will be injected
+            content()
+            Spacer(modifier = Modifier.height(2.dp))
+            HorizontalDivider(modifier = Modifier.fillMaxWidth(0.95f).background(Color.LightGray))
+        }
+    }
+}
 
 //Card that displays all insurers details
 @Preview
@@ -85,14 +136,13 @@ import org.w3c.dom.Text
 
     Card(
         modifier = Modifier
-
             .padding(4.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(corner = CornerSize(16.dp)),
         elevation = CardDefaults.cardElevation(2.dp),
         onClick = { onItemClick(insurer.id) }) //USE ONCLICK AND NOT.CLICKABLE
     {
-        Column(modifier = Modifier.background(Color(0xFFF5F5F5))) {
+        Column(modifier = Modifier.background(Color(lightGray))) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start) {
@@ -129,6 +179,7 @@ import org.w3c.dom.Text
                         text = "Head office: ${insurer.headOffice}",
                         style = MaterialTheme.typography.bodyMedium
                     )
+
                     Text(
                         text = "Category: ${insurer.category}",
                         style = MaterialTheme.typography.bodyMedium
@@ -137,7 +188,6 @@ import org.w3c.dom.Text
                 Icon(
                     imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else
                         Icons.Filled.KeyboardArrowDown,
-
                     contentDescription = "Down Arrow",
                     modifier = Modifier
                         .size(25.dp)
@@ -146,7 +196,6 @@ import org.w3c.dom.Text
                         },
                     tint = Color.DarkGray
                 )
-
             }
             Row(modifier = Modifier.padding(4.dp)){
                 AnimatedVisibility(visible = expanded) {
@@ -182,6 +231,7 @@ import org.w3c.dom.Text
         }
     }
 }
+
 //Life Insurance Quote
 @Composable
 fun LifeInsuranceQuoteContent() {
@@ -198,8 +248,8 @@ fun LifeInsuranceQuoteContent() {
         )
 
         item { ActivePlan(count = 1, typeOfPlan = "medical") }
-        item { SliderAdvancedExample() }
-        item { TextWithSwitch(list) }
+        item { AdvancedSlider() }
+        item { DescriptiveSwitch(list) }
         item { OccupationDropDown() }
         item { ButtonWithText("Compare 5 plans") }
     }
@@ -209,12 +259,9 @@ fun OccupationDropDown() {
     ReusableContentHolderRow(
         "Occupation",R.drawable.ic_briefcase,
     ) {
-
         val dropDownOptions = remember {
-            listOf(
-                "Office Administrator", "Human Resources Coordinator", "Project Manager", "Accountant", "Business Analyst", "Digital Marketing Specialist", "Legal Advisor", "Systems Administrator", "Financial Planner", "Operations Manager",
- "Retail Sales Assistant", "Cashier", "Call Centre Operator", "Warehouse Worker", "Security Guard"
-            )
+            listOf("Office Administrator", "Human Resources Coordinator", "Project Manager", "Accountant", "Business Analyst", "Digital Marketing Specialist", "Legal Advisor", "Systems Administrator", "Financial Planner", "Operations Manager",
+                    "Retail Sales Assistant", "Cashier", "Call Centre Operator", "Warehouse Worker", "Security Guard")
         }
         DropdownMenu("Select occupation", dropDownOptions, )
     }
@@ -223,7 +270,7 @@ fun OccupationDropDown() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-fun SliderAdvancedExample() {
+fun AdvancedSlider() {
     var sliderPosition by remember { mutableFloatStateOf(500000f) }
     val sliderInMillions = sliderPosition / 1000000
     val formattedValue = "%.2f".format(sliderInMillions)
@@ -236,7 +283,7 @@ fun SliderAdvancedExample() {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(color = Color(0xFFF5F5F5))
+                        .background(color = Color(lightGray))
                         .padding(5.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -250,9 +297,8 @@ fun SliderAdvancedExample() {
                         text = "R$formattedValue m",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF823199),
+                        color = Color(customPurple),)
 
-                        )
                     Slider(
                         modifier = Modifier,
                         value = sliderPosition,
@@ -260,10 +306,10 @@ fun SliderAdvancedExample() {
                         valueRange = 500000f..10000000f,
                         steps = 189,
                         colors = SliderDefaults.colors(
-                            activeTickColor = Color(0xFF823199),
-                            inactiveTickColor = Color(0xFF823199),
-                            thumbColor = Color(0xFF823199),
-                            activeTrackColor = Color(0xFF823199),
+                            activeTickColor = Color(customPurple),
+                            inactiveTickColor = Color(customPurple),
+                            thumbColor = Color(customPurple),
+                            activeTrackColor = Color(customPurple),
                             inactiveTrackColor = Color.White,
                             disabledThumbColor = Color.Gray,
                         )
@@ -271,7 +317,7 @@ fun SliderAdvancedExample() {
                     Text(
                         text = "Range: R500K - R10m",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF823199)
+                        color = Color(customPurple)
                     )
                 }
             }
@@ -280,9 +326,8 @@ fun SliderAdvancedExample() {
 
 }
 
-    data class TextSwitch(val header:String, val description:String)
     @Composable
-    fun TextWithSwitch( lifeStyleRiskSwitchList: List<TextSwitch>) {
+    fun DescriptiveSwitch(lifeStyleRiskSwitchList: List<TextSwitch>) {
 ReusableContentHolderRow("Lifestyle & risk", R.drawable.ic_heart) {
         for (i in lifeStyleRiskSwitchList) {
             var checked by remember { mutableStateOf(false) }
@@ -297,15 +342,16 @@ ReusableContentHolderRow("Lifestyle & risk", R.drawable.ic_heart) {
                         checked = checked,
                         onCheckedChange = { checked = it },
                         colors = SwitchDefaults.colors(
-                            checkedTrackColor = Color(0xFF823199)
-                        , uncheckedTrackColor = Color(0xFFF5F5F5))
+                            checkedTrackColor = Color(customPurple)
+                        , uncheckedTrackColor = Color(lightGray))
                     )
                 }
             }
             if(lifeStyleRiskSwitchList.last() != i)
                 HorizontalDivider()
         }
-    }}
+    }
+    }
 
 //Medical Aid Selection
 @Composable
@@ -320,7 +366,7 @@ fun MedicalAidSelectionContent() {
         item { ActivePlan(count = 1, typeOfPlan = "medical") }
         item { DependentsScreen() }
         item { MonthlyIncomeBracket() }
-        item { GroupOfSquareIconsWithText() }
+        item { GroupOfSquareIconsWithAnimationForText() }
         item { ButtonWithText("Compare 8 plans") }
     }
 }
@@ -333,7 +379,7 @@ fun ActivePlan(
     Card(
         modifier = Modifier
             .fillMaxWidth(0.95f)
-            .clickable { },
+            .clickable { TODO()},
         elevation = CardDefaults.cardElevation()
     ) {
         Row(
@@ -347,18 +393,18 @@ fun ActivePlan(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // The Circle with Icon inside of it
+                // The Grey box with icon inside of it
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = Color(0xFFF5F5F5), shape = RoundedCornerShape(5.dp)),
+                        .background(color = Color(lightGray), shape = RoundedCornerShape(5.dp)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         modifier = Modifier.size(40.dp),
                         painter = painterResource(R.drawable.ic_shield),
                         contentDescription = null,
-                        tint = Color(0xFF823199),
+                        tint = Color(customPurple),
                     )
                 }
             }
@@ -386,29 +432,109 @@ fun ActivePlan(
     HorizontalDivider(modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 5.dp))
 }
 
-data class IconText(
-    val iconRes: Int,
-    val text: String,
-    val description: String
-)
+@Composable
+fun InsurerListContent(
+    navController: NavController,
+    insurersList: List<Insurer> = getInsurers()
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp)
+        ) {
+            items(items = insurersList) {
+                InsurerRow(insurer = it) { insurer ->
+                    navController.navigate(route = InsuranceScreens.DetailsScreen.name+"/$insurer")
+                }
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    thickness = 1.dp,
+                    color = Color.LightGray
+                )
+            }
+        }
+    }
+}
+
 
 @Composable
-fun GroupOfSquareIconsWithText() {
+fun DependentStepper(
+    count: Int,
+    onIncrement: () -> Unit,
+    onDecrement: () -> Unit
+) {
+    Row(
+        //colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+        modifier = Modifier
+            .fillMaxWidth(0.9f)
+    ) {
 
-    var selectedItem by remember { mutableStateOf<IconText?>(null) }
+        Row(
+            modifier = Modifier
+            //.background(Color.Red),
+            ,
+            verticalAlignment = CenterVertically,
+            horizontalArrangement = Arrangement.Start // Pushes text to left, controls to right
+        ) {
+
+            Text(text = "Spouse & children", modifier = Modifier.weight(1f))
+            // Increment number of dependents Controls
+            Row(verticalAlignment = CenterVertically) {
+                IconButton(onClick = onDecrement) {
+                    Icon(
+                        painterResource(R.drawable.ic_minus),
+                        contentDescription = "Decrease"
+                    )
+                }
+
+                Text(
+                    text = count.toString(),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+
+                IconButton(onClick = onIncrement) {
+                    Icon(
+                        painterResource(R.drawable.ic_add),
+                        contentDescription = "Increase"
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DependentsScreen() {
+    var count by remember { mutableIntStateOf(0) }
+    ReusableContentHolderRow(
+        title = "Number of dependents",
+        iconRes = R.drawable.ic_group
+    ) {
+        DependentStepper(
+            count = count,
+            onIncrement = { count++ },
+            onDecrement = { if (count > 0) count-- }
+        )
+    }
+}
+@Composable
+fun GroupOfSquareIconsWithAnimationForText() {
+
+    var selectedItem by remember { mutableStateOf<DescriptiveTextWithIcon?>(null) }
 
     val listOfIcons = listOf(
-        IconText(
+        DescriptiveTextWithIcon(
             R.drawable.ic_hospital,
             "Hospital",
             "This plan is designed for individuals who are generally healthy and looking to mitigate the high costs of catastrophic events. It focuses strictly on in-patient care, covering costs incurred while you are admitted to a hospital (such as surgeries, ward fees, and theater costs)."
         ),
-        IconText(
+        DescriptiveTextWithIcon(
             R.drawable.ic_comprehensive,
             "Comprehensive",
             "Our highest level of risk transfer. This plan offers extensive cover for both major hospital events and day-to-day healthcare. It often includes above-threshold benefits, meaning if your savings run out, the insurer continues to pay for essential services. It also typically provides richer benefits for chronic medication and specialized treatments."
         ),
-        IconText(
+        DescriptiveTextWithIcon(
             R.drawable.ic_save,
             "Saving",
             "A middle-ground approach that combines \"peace of mind\" for hospital stays with a dedicated personal savings account. A portion of your monthly premium is set aside to cover day-to-day medical expenses like GP visits, prescribed medicine, and optometry. Once your savings are depleted, you typically pay for out-of-hospital costs yourself"
@@ -431,8 +557,7 @@ fun GroupOfSquareIconsWithText() {
                         modifier = Modifier
                             .padding(top =5.dp, start = 5.dp, end = 5.dp)
                             .weight(1f)
-                            .fillMaxHeight()
-                            ,
+                            .fillMaxHeight(),
                         verticalArrangement = Arrangement.Center
                     ) {
                         val isSelected = selectedItem == item // checks if the card is selected
@@ -442,10 +567,10 @@ fun GroupOfSquareIconsWithText() {
                                 .clickable { selectedItem = item },
                             border = if (isSelected) BorderStroke(
                                 2.dp,
-                                Color(0xFF823199)
+                                Color(customPurple)
                             ) else null,
                             colors = CardDefaults.cardColors(
-                                containerColor = if (isSelected) Color.White else Color(0xFFF5F5F5)
+                                containerColor = if (isSelected) Color.White else Color(lightGray)
                             )
                         ) {
                             // 2. Column that stacks the icon and text vertically
@@ -466,14 +591,14 @@ fun GroupOfSquareIconsWithText() {
                                     Icon(
                                         painter = painterResource(item.iconRes),
                                         contentDescription = null,
-                                        tint = Color(0xFF823199),
+                                        tint = Color(customPurple),
                                         modifier = Modifier
                                             .size(40.dp)
                                     )
                                 }
-                                // The label below the circle w/ Icon
+                                // The text label below the circle w/ Icon
                                 Text(
-                                    text = item.text,
+                                    text = item.heading,
                                     fontWeight = FontWeight.Medium,
                                     color = Color.Black,
                                     textAlign = TextAlign.Center,
@@ -485,12 +610,12 @@ fun GroupOfSquareIconsWithText() {
                     }
                 }
             }
-            // Description Area
+            // Description area that appears after a card is selected
             selectedItem?.let { item ->
                 Column(modifier = Modifier.padding(top = 10.dp, start = 10.dp, end = 10.dp)) {
                     Text(
-                        text = item.text.uppercase(),
-                        color = Color(0xFF823199),
+                        text = item.heading.uppercase(),
+                        color = Color(customPurple),
                         style = MaterialTheme.typography.labelLarge
                     )
                     Spacer(modifier = Modifier.height(4.dp))
@@ -505,13 +630,11 @@ fun GroupOfSquareIconsWithText() {
     }
 }
 
-
 @Composable
 fun MonthlyIncomeBracket() {
     ReusableContentHolderRow(
         "Monthly Income Bracket", R.drawable.ic_currency,
     ) {
-
         val dropDownOptions = remember {
             listOf(
                 "R0 - R5,000",
@@ -582,9 +705,9 @@ fun DropdownMenu(dropDownLabel: String, dropDownOptions: List<String>) {
 fun ButtonWithText(text: String) {
     Box(
         modifier = Modifier
-            .background(Color(0xFF823199), shape = RoundedCornerShape(5.dp))
+            .background(Color(customPurple), shape = RoundedCornerShape(5.dp))
             .fillMaxWidth(0.8f)
-            .clickable{}
+            .clickable{ TODO()}
             .padding(10.dp),
         contentAlignment = Alignment.Center,
 
