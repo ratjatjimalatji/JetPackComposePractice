@@ -20,7 +20,8 @@ Below is the step-by-step user journey through the application.
 ### 1. Home Screen - Insurance Type Selection
 The entry point where users select their specific insurance vertical.
 > [!NOTE]
-> <img width="331" alt="Home Screen" src="https://github.com/user-attachments/assets/f186ed49-35ea-4aaa-a978-f96fb014356d" />
+> <img width="326" height="724" alt="Screenshot 2026-03-24 at 16 46 58" src="https://github.com/user-attachments/assets/efd43aa7-8ca9-4a9e-821f-ebb38f700fb8" />
+
 >
 > **Description:** Users choose between Medical Aid, Life, or Vehicle insurance. This screen demonstrates the use of high-level navigation and buttons.
 
