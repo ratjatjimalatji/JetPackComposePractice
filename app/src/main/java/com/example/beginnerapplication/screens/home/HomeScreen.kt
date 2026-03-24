@@ -1,58 +1,58 @@
 package com.example.beginnerapplication.screens.home
 
-import Insurer
+
+import android.annotation.SuppressLint
 import com.example.beginnerapplication.R
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -62,13 +62,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.alpha
 import androidx.navigation.NavController
+import androidx.room.util.copy
+import androidx.room3.util.copy
 import com.example.beginnerapplication.navigation.InsuranceScreens
-import com.example.beginnerapplication.widgets.InsurerRow
+import com.example.beginnerapplication.widgets.customPurple
 import getInsurers
 import kotlinx.coroutines.launch
 
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -76,11 +80,15 @@ fun HomeScreen(navController: NavController) {
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "Insurance Application",
-                        style = MaterialTheme.typography.titleLarge,
-
+                    Image(
+                        painter = painterResource(id = R.drawable.images),
+                        contentDescription = "MetaHeights logo",
+                        modifier = Modifier
+                            .size(25.dp)
+                            .padding(start = 8.dp)
                     )
+                    Spacer(Modifier.width(8.dp))
+                    Text("Kotlin Insurance", modifier = Modifier.padding(start = 30.dp))
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFFF5F5F5),
@@ -88,53 +96,146 @@ fun HomeScreen(navController: NavController) {
                 )
             )
         }
-    ) { innerPadding ->
-        // innerPadding ensures content starts below the TopAppBar
-        Box( modifier = Modifier.background(Color.White)
-            .padding(innerPadding)) {
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp), // Increased padding for an airy feel
+            verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-            Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            // Header with accent underline
+            Column(horizontalAlignment = Alignment.Start) {
 
-                Text("Select a Service", style = MaterialTheme.typography.headlineSmall)
-                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Select Coverage",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color(customPurple),
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    "What would you like to insure?",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF212529) // Dark grey text
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                // Subtle accent line
+                Box(
+                    modifier = Modifier
+                        .background(Color(customPurple), CircleShape)
+                        .width(100.dp)
+                        .height(3.dp)
 
-                // 1. Button for Insurers
-                Button(
-                    onClick = {
-                        navController.navigate(InsuranceScreens.InsurerListScreen.name)
-                    },
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-                ) {
-                    Text("View Insurers")
-                }
-
-                // 2. Button for Medical Aid
-                Button(
-                    onClick = { navController.navigate(InsuranceScreens.MedicalAidSelectionScreen.name) },
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-                ) {
-                    Text("Medical Aid Selection")
-                }
-
-                // 3. Button for Life Insurance
-                Button(
-                    onClick = { navController.navigate(InsuranceScreens.LifeInsuranceQuoteScreen.name) },
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-                ) {
-                    Text("Life Insurance Quote")
-                }
-
-                // 4. Button for Vehicle (Example of 4th button)
-                Button(
-                    onClick = { navController.navigate(InsuranceScreens.VehicleInsuranceInputScreen.name) },
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-                ) {
-                    Text("Vehicle Insurance")
-                }
+                        .align(Alignment.CenterHorizontally)
+                )
             }
-        }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            InsuranceTypeNavigationButton(
+                title = "Vehicle Insurance",
+                icon = painterResource(id = R.drawable.ic_car),
+                onClick = {
+                    //TODO()
+                }
+            )
+
+            InsuranceTypeNavigationButton(
+                title = "Medical Insurance",
+                icon = painterResource(id = R.drawable.ic_medical),
+                onClick = {
+                    navController.navigate(InsuranceScreens.MedicalAidSelectionScreen.name)
+                }
+            )
+
+            InsuranceTypeNavigationButton(
+                title = "Life Insurance",
+                icon = painterResource(id = R.drawable.ic_heart),
+                onClick = {
+                    navController.navigate(InsuranceScreens.LifeInsuranceQuoteScreen.name)
+                }
+            )
+
+
+            InsuranceTypeNavigationButton(
+                title = "Home Insurance",
+                icon = painterResource(id = R.drawable.ic_home),
+                onClick = {
+                    //navController.navigate(InsuranceScreens.VehicleInsuranceInputScreen.name)
+                }
+            )
+
+            InsuranceTypeNavigationButton(
+                title = "Business Insurance",
+                icon = painterResource(id = R.drawable.ic_business),
+                onClick = {
+                    //navController.navigate(InsuranceScreens.LifeInsuranceQuoteScreen.name)
+                }
+            )
+
         }
     }
+}
+
+@Composable
+private fun InsuranceTypeNavigationButton(
+    title: String,
+    icon: Painter, // Use Painter for general icons
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp)
+            .height(72.dp)
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                spotColor = Color(customPurple).copy(alpha = 0.3f)
+            ),
+        shape = RoundedCornerShape(16.dp),
+        color = Color.White
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(Color(customPurple).copy(alpha = 0.15f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = icon,
+                        contentDescription = null,
+                        tint = Color(customPurple),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF333333)
+                )
+            }
+
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
+                contentDescription = null,
+                tint = Color.Gray.copy(alpha = 0.6f)
+            )
+        }
+    }
+}
 
 //product input composables
 @Composable
